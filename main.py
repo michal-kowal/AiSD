@@ -1,11 +1,8 @@
 import random
-
+import time
 
 # generowanie danych
 # losowe liczby
-import time
-
-
 def losowe(minimum, maximum, length):
     tab = []
     for i in range(length):
