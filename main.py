@@ -1,15 +1,14 @@
 import random
 import time
 
-# generatory danych
 
+# generatory danych
 # losowe liczby
-rund_num_list = [] #to dodałem i w środku funkcji tab wymieniłem na to i jeszcze do insertion sort dałem to
 def losowe(minimum, maximum, length):
-    #tab = []
+    tab = []
     for i in range(length):
-        rund_num_list.append(random.randint(minimum, maximum))
-    return rund_num_list
+        tab.append(random.randint(minimum, maximum))
+    return tab
 
 
 # tablica rosnaca
@@ -20,7 +19,7 @@ def rosnaca(length):
     return tab
 
 
-#tablica malejaca
+# tablica malejaca
 def malejaca(length):
     tab = []
     for i in range(length - 1, -1, -1):
@@ -28,7 +27,7 @@ def malejaca(length):
     return tab
 
 
-#tablica A-ksztaltna
+# tablica A-ksztaltna
 def a_ksztaltna(length):
     tab = []
     for i in range(0, int(length / 2)):
@@ -38,7 +37,7 @@ def a_ksztaltna(length):
     return tab
 
 
-#tablica V-ksztaltna
+# tablica V-ksztaltna
 def v_ksztaltna(length):
     tab = []
     for i in range(0, int(length / 2)):
@@ -48,9 +47,8 @@ def v_ksztaltna(length):
     return tab
 
 
-
 # insertion sort
-def insertion_sort(array):
+def insertion_sort(array, tryb):
     zamian = 0
     porownan = 0
     start = time.time()
@@ -63,23 +61,16 @@ def insertion_sort(array):
             j -= 1
             array[j + 1] = key
             zamian += 1
-            if j>=0:
+            if j >= 0:
                 porownan += 1
     end = time.time()
-    print("INSERTION SORT:") #dodałem to
     print("czas operacji: ", (end - start))
     print("ilosc zamian: ", zamian)
     print("ilosc porownan: ", porownan)
-    print(array)
+    if tryb == 't':
+        print(*array)
     return array
-ins_list = rund_num_list[::]
 
-print(losowe(1, 10000, n))
-print(rosnaca(10))
-print(malejaca(10))
-print(a_ksztaltna(8))
-print(v_ksztaltna(9))
-insertion_sort(ins_list)
 
 # MERGE SORT
 def merge_sort(array):
@@ -113,65 +104,119 @@ def merge_sort(array):
             k += 1
             porownan +=1
     return array, porownan
-def pomiary_merge_sort():
+
+
+def pomiary_merge_sort(mer_list, tryb):
     start = time.time()
     sort_list = merge_sort(mer_list)
     end = time.time()
     porownan = sort_list[-1]
-    print("MERGE SORT:")
     print("czas operacji: ", (end - start))
     print("liczba porównań: " + str(porownan))
     # dodać liczbę scaleń
-mer_list = rund_num_list[::]
-pomiary_merge_sort()
-print(mer_list)
 
-#SHELL SORT KNUTH SEQUENCE
-def shell_sort(array):
+
+# SHELL SORT KNUTH SEQUENCE
+def shell_sort(array, tryb):
     start = time.time()
     porownan = 0
     zamian = 0
     gap = 1
     while gap <= len(array)//3:
         gap = gap*3 + 1
-    print("SHELL SORT:")
     while gap > 0:
         print("przeskok: ", gap)
         for i in range(gap, n):
             temp = array[i]
             j = i
-            while  j >= gap and array[j - gap] < temp:
+            while j >= gap and array[j - gap] < temp:
                 array[j] = array[j - gap]
                 j -= gap
             array[j] = temp
         gap = (gap - 1)//3
     end = time.time()
-    print("czas operacji", end - start)
-    print(array)
-    # dodać liczbę porównań i zamian
-she_list = rund_num_list[::]
-shell_sort(she_list)
+    print("czas operacji: ", end - start)
+    if tryb == 't':
+        print(*array)
+    # dodac liczbe porownan i zamian
 
-#QUICK SORT RECURSION
-print("QUICK SORT:")
-qui_list = rund_num_list[::]
-def quick_sort(array):
+
+def quick_sort(array, tryb):
     if len(array) <= 1: return array
-    smaller, equal, larger = [],[],[]
+    smaller, equal, larger = [], [], []
     pivot = array[-1]
-    print("pivot: ", pivot)
+    if tryb == 't':     # warunek zostal dodany poniewaz tylko gdy wprowadzamy dane recznie mamy wyswietlac pivota, gdy generujemy dane jest on niepotrzebny
+        print("pivot: ", pivot)
     porownan = 0
     for i in array:
         if i > pivot: larger.append(i)
         elif i == pivot: equal.append(i)
         else: smaller.append(i)
         porownan +=1
-    return quick_sort(larger)+equal+quick_sort(smaller)
-def pomiar_quick_sort():
+    return quick_sort(larger, tryb)+equal+quick_sort(smaller, tryb)
+
+
+def pomiar_quick_sort(qui_list, tryb):
     start = time.time()
-    sort_list = quick_sort(qui_list)
+    sort_list = quick_sort(qui_list, tryb)
     end = time.time()
     print("ilość porównan: ")
     print("czas operacji: ", end - start)
-    print(sort_list)
-pomiar_quick_sort()
+    if tryb == 't':
+        print(sort_list)
+
+
+# Czesc sterujaca programem
+def rodzaj_sortowania(ciag, tryb, tablica):    # tryb okresla czy program ma dane wprowadzane recznie czy generuje je sam
+    if ciag == 1:
+        return pomiary_merge_sort(tablica, tryb)
+    elif ciag == 2:
+        return 1 # tu bedzie heap sort
+    elif ciag == 3:
+        return insertion_sort(tablica, tryb)
+    elif ciag == 4:
+        return shell_sort(tablica, tryb)
+    elif ciag == 5:
+        return pomiar_quick_sort(tablica, tryb)
+
+
+# program pyta uzytkownika czy chce wprowadzac dane recznie czy chce korzystac z generatora danych
+print("Czy chcesz wprowadzic dane recznie? (t/n)")
+ans = input()
+if ans == 't':
+    print('Wprowadz dane uzywajac spacji')
+    tab = list(map(int, input().split()))
+
+    print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
+    rodzaj = int(input())
+    rodzaj_sortowania(rodzaj, ans, tab)
+
+    print('Ciag wejsciowy: ', *tab)
+elif ans == 'n':
+    print('Podaj dlugosc ciagu: ')
+    n = int(input())
+
+    print("Wybierz rodzaj ciagu: 1) losowy 2) rosnacy 3) malejacy 4) A-ksztaltny 5) V-ksztaltny")
+    ciag = int(input())
+
+    print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
+    rodzaj = int(input())
+
+    for i in range(10):
+        print("Pomiar nr: ", i + 1)
+        if ciag == 1:
+            tab = losowe(1, 10 * n, n)
+            rodzaj_sortowania(rodzaj, ans, tab)
+        elif ciag == 2:
+            tab = rosnaca(n)
+            rodzaj_sortowania(rodzaj, ans, tab)
+        elif ciag == 3:
+            tab = malejaca(n)
+            rodzaj_sortowania(rodzaj, ans, tab)
+        elif ciag == 4:
+            tab = a_ksztaltna(n)
+            rodzaj_sortowania(rodzaj, ans, tab)
+        elif ciag == 5:
+            tab = v_ksztaltna(n)
+            rodzaj_sortowania(rodzaj, ans, tab)
+        print('______________________________')
