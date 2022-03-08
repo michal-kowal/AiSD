@@ -143,7 +143,7 @@ def heap_sort(array, tryb):
         heap(array, i, 0)
     end = time.time()
     print('Czas operacji: ', end - start)
-
+    #dodać porównania i zamiany
 
 # SHELL SORT KNUTH SEQUENCE
 def shell_sort(array, tryb):
@@ -154,7 +154,8 @@ def shell_sort(array, tryb):
     while gap <= len(array) // 3:
         gap = gap * 3 + 1
     while gap > 0:
-        print("przeskok: ", gap)
+        if tryb == 't':
+            print("przeskok: ", gap)
         for i in range(gap, n):
             temp = array[i]
             j = i
@@ -197,7 +198,7 @@ def pomiar_quick_sort(qui_list, tryb):
     print("czas operacji: ", end - start)
     if tryb == 't':
         print(sort_list)
-
+    #dodać zamiany
 
 # Czesc sterujaca programem
 def rodzaj_sortowania(ciag, tryb, tablica):  # tryb okresla czy program ma dane wprowadzane recznie czy generuje je sam
