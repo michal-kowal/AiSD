@@ -73,19 +73,21 @@ def insertion_sort(array, tryb):
 
 
 # MERGE SORT
+porownan_merge = 0
+scalen_merge = 0
 def merge_sort(array):
-    porownan = 0
     if len(array) > 1:
         srodek = len(array) // 2
-        prawa = array[:srodek]
-        lewa = array[srodek:]
-        l = merge_sort(lewa)
-        p = merge_sort(prawa)
+        lewa = array[:srodek]
+        prawa = array[srodek:]
+        merge_sort(lewa)
+        merge_sort(prawa)
         i = 0
         j = 0
         k = 0
-        porownan += l[1] + p[1]
         while i < len(lewa) and j < len(prawa):
+            global porownan_merge
+            porownan_merge += 1
             if lewa[i] >= prawa[j]:
                 array[k] = lewa[i]
                 i += 1
@@ -97,23 +99,24 @@ def merge_sort(array):
             array[k] = lewa[i]
             i += 1
             k += 1
-            porownan += 1
         while j < len(prawa):
             array[k] = prawa[j]
             j += 1
             k += 1
-            porownan += 1
-    return array, porownan
+        global scalen_merge
+        scalen_merge += 1
+    return array
 
 
 def pomiary_merge_sort(mer_list, tryb):
     start = time.time()
     sort_list = merge_sort(mer_list)
     end = time.time()
-    porownan = sort_list[-1]
     print("czas operacji: ", (end - start))
-    print("liczba porównań: " + str(porownan))
-    # dodać liczbę scaleń
+    print("liczba porownan: ", porownan_merge)
+    if tryb == 't':
+        print("liczba scalen: ", scalen_merge)
+        print('Ciag wyjsciowy: ', *sort_list)
 
 
 # HEAP SORT
@@ -163,7 +166,7 @@ def shell_sort(array, tryb):
     end = time.time()
     print("czas operacji: ", end - start)
     if tryb == 't':
-        print(*array)
+        print('Ciag wyjsciowy: ', *array)
     # dodac liczbe porownan i zamian
 
 
@@ -220,8 +223,8 @@ if ans == 't':
     print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
     rodzaj = int(input())
 
-    rodzaj_sortowania(rodzaj, ans, tab)
     print('Ciag wejsciowy: ', *tab)
+    rodzaj_sortowania(rodzaj, ans, tab)
 
 elif ans == 'n':
     print('Podaj dlugosc ciagu: ')
