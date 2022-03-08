@@ -76,7 +76,7 @@ def insertion_sort(array, tryb):
 def merge_sort(array):
     porownan = 0
     if len(array) > 1:
-        srodek = len(array)//2
+        srodek = len(array) // 2
         prawa = array[:srodek]
         lewa = array[srodek:]
         l = merge_sort(lewa)
@@ -102,7 +102,7 @@ def merge_sort(array):
             array[k] = prawa[j]
             j += 1
             k += 1
-            porownan +=1
+            porownan += 1
     return array, porownan
 
 
@@ -116,14 +116,40 @@ def pomiary_merge_sort(mer_list, tryb):
     # dodać liczbę scaleń
 
 
+# HEAP SORT
+def heap(array, n, i):
+    smallest = i
+    l = 2 * i + 1
+    r = 2 * i + 2
+    if l < n and array[l] < array[smallest]:
+        smallest = l
+    if r < n and array[r] < array[smallest]:
+        smallest = r
+    if smallest != i:
+        array[i], array[smallest] = array[smallest], array[i]
+        heap(array, n, smallest)
+
+
+def heap_sort(array, tryb):
+    n = len(array)
+    start = time.time()
+    for i in range(int(n / 2) - 1, -1, -1):
+        heap(array, n, i)
+    for i in range(n - 1, -1, -1):
+        array[0], array[i] = array[i], array[0]
+        heap(array, i, 0)
+    end = time.time()
+    print('Czas operacji: ', end - start)
+
+
 # SHELL SORT KNUTH SEQUENCE
 def shell_sort(array, tryb):
     start = time.time()
     porownan = 0
     zamian = 0
     gap = 1
-    while gap <= len(array)//3:
-        gap = gap*3 + 1
+    while gap <= len(array) // 3:
+        gap = gap * 3 + 1
     while gap > 0:
         print("przeskok: ", gap)
         for i in range(gap, n):
@@ -133,7 +159,7 @@ def shell_sort(array, tryb):
                 array[j] = array[j - gap]
                 j -= gap
             array[j] = temp
-        gap = (gap - 1)//3
+        gap = (gap - 1) // 3
     end = time.time()
     print("czas operacji: ", end - start)
     if tryb == 't':
@@ -141,19 +167,23 @@ def shell_sort(array, tryb):
     # dodac liczbe porownan i zamian
 
 
+# QUICK SORT RECURSION:
 def quick_sort(array, tryb):
     if len(array) <= 1: return array
     smaller, equal, larger = [], [], []
     pivot = array[-1]
-    if tryb == 't':     # warunek zostal dodany poniewaz tylko gdy wprowadzamy dane recznie mamy wyswietlac pivota, gdy generujemy dane jest on niepotrzebny
+    if tryb == 't':  # warunek zostal dodany poniewaz tylko gdy wprowadzamy dane recznie mamy wyswietlac pivota, gdy generujemy dane jest on niepotrzebny
         print("pivot: ", pivot)
     porownan = 0
     for i in array:
-        if i > pivot: larger.append(i)
-        elif i == pivot: equal.append(i)
-        else: smaller.append(i)
-        porownan +=1
-    return quick_sort(larger, tryb)+equal+quick_sort(smaller, tryb)
+        if i > pivot:
+            larger.append(i)
+        elif i == pivot:
+            equal.append(i)
+        else:
+            smaller.append(i)
+        porownan += 1
+    return quick_sort(larger, tryb) + equal + quick_sort(smaller, tryb)
 
 
 def pomiar_quick_sort(qui_list, tryb):
@@ -167,11 +197,11 @@ def pomiar_quick_sort(qui_list, tryb):
 
 
 # Czesc sterujaca programem
-def rodzaj_sortowania(ciag, tryb, tablica):    # tryb okresla czy program ma dane wprowadzane recznie czy generuje je sam
+def rodzaj_sortowania(ciag, tryb, tablica):  # tryb okresla czy program ma dane wprowadzane recznie czy generuje je sam
     if ciag == 1:
         return pomiary_merge_sort(tablica, tryb)
     elif ciag == 2:
-        return 1 # tu bedzie heap sort
+        return heap_sort(tablica, tryb)
     elif ciag == 3:
         return insertion_sort(tablica, tryb)
     elif ciag == 4:
@@ -189,9 +219,10 @@ if ans == 't':
 
     print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
     rodzaj = int(input())
-    rodzaj_sortowania(rodzaj, ans, tab)
 
+    rodzaj_sortowania(rodzaj, ans, tab)
     print('Ciag wejsciowy: ', *tab)
+
 elif ans == 'n':
     print('Podaj dlugosc ciagu: ')
     n = int(input())
@@ -201,7 +232,7 @@ elif ans == 'n':
 
     print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
     rodzaj = int(input())
-
+    print('_______________________________________________________________________')
     for i in range(10):
         print("Pomiar nr: ", i + 1)
         if ciag == 1:
