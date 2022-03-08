@@ -217,6 +217,8 @@ if ans == 't':
     print('Wprowadz dane uzywajac spacji')
     tab = list(map(int, input().split()))
 
+    n = len(tab)
+
     print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
     rodzaj = int(input())
 
