@@ -109,6 +109,7 @@ def merge_sort(array):
 
 
 def pomiary_merge_sort(mer_list, tryb):
+    global porownan_merge, scalen_merge
     start = time.time()
     sort_list = merge_sort(mer_list)
     end = time.time()
@@ -117,33 +118,50 @@ def pomiary_merge_sort(mer_list, tryb):
     if tryb == 't':
         print("liczba scalen: ", scalen_merge)
         print('Ciag wyjsciowy: ', *sort_list)
+    porownan_merge = 0
+    scalen_merge = 0
 
 
 # HEAP SORT
+porownan_heap = 0
+zamian_heap = 0
 def heap(array, n, i):
     smallest = i
     l = 2 * i + 1
     r = 2 * i + 2
-    if l < n and array[l] < array[smallest]:
-        smallest = l
-    if r < n and array[r] < array[smallest]:
-        smallest = r
+    global porownan_heap, zamian_heap
+    if l < n:
+        porownan_heap += 1
+        if array[l] < array[smallest]:
+            smallest = l
+    if r < n:
+        porownan_heap += 1
+        if array[r] < array[smallest]:
+            smallest = r
     if smallest != i:
+        zamian_heap += 1
         array[i], array[smallest] = array[smallest], array[i]
         heap(array, n, smallest)
 
 
 def heap_sort(array, tryb):
+    global zamian_heap, porownan_heap
     n = len(array)
     start = time.time()
     for i in range(int(n / 2) - 1, -1, -1):
         heap(array, n, i)
     for i in range(n - 1, -1, -1):
+        zamian_heap += 1
         array[0], array[i] = array[i], array[0]
         heap(array, i, 0)
     end = time.time()
     print('Czas operacji: ', end - start)
-    #dodać porównania i zamiany
+    print('Porownan: ', porownan_heap)
+    print('Zamian: ', zamian_heap)
+    if tryb == 't':
+        print('Ciag wyjsciowy: ', *array)
+    zamian_heap = 0
+    porownan_heap = 0
 
 # SHELL SORT KNUTH SEQUENCE
 def shell_sort(array, tryb):
@@ -199,6 +217,7 @@ def pomiar_quick_sort(qui_list, tryb):
     if tryb == 't':
         print(sort_list)
     #dodać zamiany
+
 
 # Czesc sterujaca programem
 def rodzaj_sortowania(ciag, tryb, tablica):  # tryb okresla czy program ma dane wprowadzane recznie czy generuje je sam
