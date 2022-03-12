@@ -163,11 +163,12 @@ def heap_sort(array, tryb):
     zamian_heap = 0
     porownan_heap = 0
 
+
 # SHELL SORT KNUTH SEQUENCE
 def shell_sort(array, tryb):
+    porownan_shell = 0
+    zamian_shell = 0
     start = time.time()
-    porownan = 0
-    zamian = 0
     gap = 1
     while gap <= len(array) // 3:
         gap = gap * 3 + 1
@@ -177,16 +178,21 @@ def shell_sort(array, tryb):
         for i in range(gap, n):
             temp = array[i]
             j = i
+            porownan_shell += 1
             while j >= gap and array[j - gap] < temp:
                 array[j] = array[j - gap]
                 j -= gap
+                zamian_shell += 1
+                if j >= gap:
+                    porownan_shell += 1
             array[j] = temp
         gap = (gap - 1) // 3
     end = time.time()
     print("czas operacji: ", end - start)
+    print("porownan: ", porownan_shell)
+    print("zamian: ", zamian_shell)
     if tryb == 't':
         print('Ciag wyjsciowy: ', *array)
-    # dodac liczbe porownan i zamian
 
 
 # QUICK SORT RECURSION:
