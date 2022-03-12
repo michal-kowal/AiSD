@@ -1,5 +1,8 @@
 import random
 import time
+import sys
+
+sys.setrecursionlimit(100000)
 
 
 # generatory danych
@@ -196,33 +199,44 @@ def shell_sort(array, tryb):
 
 
 # QUICK SORT RECURSION:
-def quick_sort(array, tryb):
-    if len(array) <= 1: return array
-    smaller, equal, larger = [], [], []
-    pivot = array[-1]
+qsort_porownan = 0
+qsort_zamian = 0
+def partition(array, low, high, tryb):
+    global qsort_zamian, qsort_porownan
+    pivot = array[high]
     if tryb == 't':  # warunek zostal dodany poniewaz tylko gdy wprowadzamy dane recznie mamy wyswietlac pivota, gdy generujemy dane jest on niepotrzebny
         print("pivot: ", pivot)
-    porownan = 0
-    for i in array:
-        if i > pivot:
-            larger.append(i)
-        elif i == pivot:
-            equal.append(i)
-        else:
-            smaller.append(i)
-        porownan += 1
-    return quick_sort(larger, tryb) + equal + quick_sort(smaller, tryb)
+    i = low - 1
+    for j in range(low, high):
+        qsort_porownan += 1
+        if array[j] > pivot:
+            i += 1
+            (array[i], array[j]) = (array[j], array[i])
+            qsort_zamian += 1
+    (array[i + 1], array[high]) = (array[high], array[i + 1])
+    qsort_zamian += 1
+    return i + 1
 
 
-def pomiar_quick_sort(qui_list, tryb):
+def quick_sort(array, low, high, tryb):
+    if low < high:
+        pi = partition(array, low, high, tryb)
+        quick_sort(array, low, pi - 1, tryb)
+        quick_sort(array, pi + 1, high, tryb)
+
+
+def pomiary_quick_sort(array, low, high, tryb):
+    global qsort_zamian, qsort_porownan
     start = time.time()
-    sort_list = quick_sort(qui_list, tryb)
+    quick_sort(array, low,  high, tryb)
     end = time.time()
-    print("ilość porównan: ")
+    print("Porownan: ", qsort_porownan)
+    print("Zamian: ", qsort_zamian)
     print("czas operacji: ", end - start)
     if tryb == 't':
-        print(sort_list)
-    #dodać zamiany
+        print('Ciag wyjsciowy: ', *array)
+    qsort_porownan = 0
+    qsort_zamian = 0
 
 
 # Czesc sterujaca programem
@@ -236,7 +250,7 @@ def rodzaj_sortowania(ciag, tryb, tablica):  # tryb okresla czy program ma dane 
     elif ciag == 4:
         return shell_sort(tablica, tryb)
     elif ciag == 5:
-        return pomiar_quick_sort(tablica, tryb)
+        return pomiary_quick_sort(tablica, 0, len(tablica) - 1, tryb)
 
 
 # program pyta uzytkownika czy chce wprowadzac dane recznie czy chce korzystac z generatora danych
