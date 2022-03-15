@@ -1,3 +1,4 @@
+import math
 import random
 import time
 import sys
@@ -18,36 +19,50 @@ def losowe(minimum, maximum, length):
 # tablica rosnaca
 def rosnaca(length):
     tab = []
+    element = random.randint(1, length * 10 - length + 1)
     for i in range(0, length):
-        tab.append(i)
+        tab.append(element)
+        element = random.randint(element + 1, length * 10 - length + 2 + i)
     return tab
 
 
 # tablica malejaca
 def malejaca(length):
     tab = []
-    for i in range(length - 1, -1, -1):
-        tab.append(i)
+    element = random.randint(length, length * 10)
+    for i in range(length):
+        tab.append(element)
+        element = random.randint(length - 1 - i, element - 1)
     return tab
 
 
 # tablica A-ksztaltna
 def a_ksztaltna(length):
     tab = []
-    for i in range(0, int(length / 2)):
-        tab.append(2 * i + 1)
-    for i in range(int(length / 2), length):
-        tab.append(2 * (length - i))
+    element = random.randint(1, length * 10 - math.floor(length / 2) + 1)
+    for i in range(math.floor(length / 2)):
+        tab.append(element)
+        if j != math.floor(length / 2) - 1:
+            element = random.randint(element + 1, length * 10 - math.floor(length / 2) + i + 2)
+    element = random.randint(length // 2, element - 1)
+    for i in range(length // 2):
+        tab.append(element)
+        element = random.randint(length // 2 - i - 1, element - 1)
     return tab
 
 
 # tablica V-ksztaltna
 def v_ksztaltna(length):
     tab = []
-    for i in range(0, int(length / 2)):
-        tab.append(2 * (int(length / 2) - i))
-    for i in range(int(length / 2), length):
-        tab.append(2 * (i - int(length / 2)) + 1)
+    element = random.randint(math.floor(length/2), length * 10)
+    for i in range(math.floor(length / 2)):
+        tab.append(element)
+        if j != math.floor(length / 2) - 1:
+            element = random.randint(math.floor(length / 2) - i - 1, element - 1)
+    element = random.randint(element + 1, length * 10 - length // 2 + 1)
+    for i in range(length // 2):
+        tab.append(element)
+        element = random.randint(element + 1, length * 10 - length // 2 + i + 2)
     return tab
 
 
@@ -269,6 +284,8 @@ def rodzaj_sortowania(ciag, tryb, tablica):  # tryb okresla czy program ma dane 
 # program pyta uzytkownika czy chce wprowadzac dane recznie czy chce korzystac z generatora danych
 print("Czy chcesz wprowadzic dane recznie? (t/n)")
 ans = input()
+czasy = []
+operacje = []
 if ans == 't':
     print('Wprowadz dane uzywajac spacji')
     tab = list(map(int, input().split()))
@@ -291,28 +308,34 @@ elif ans == 'n':
     print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
     rodzaj = int(input())
     print('_______________________________________________________________________')
-    czasy = []
-    operacje = []
-    for i in range(10):
-        print("Pomiar nr: ", i + 1)
-        if ciag == 1:
-            tab = losowe(1, 10 * n, n)
-            rodzaj_sortowania(rodzaj, ans, tab)
-        elif ciag == 2:
-            tab = rosnaca(n)
-            rodzaj_sortowania(rodzaj, ans, tab)
-        elif ciag == 3:
-            tab = malejaca(n)
-            rodzaj_sortowania(rodzaj, ans, tab)
-        elif ciag == 4:
-            tab = a_ksztaltna(n)
-            rodzaj_sortowania(rodzaj, ans, tab)
-        elif ciag == 5:
-            tab = v_ksztaltna(n)
-            rodzaj_sortowania(rodzaj, ans, tab)
+
+    for j in range(1):  # petla dodana aby wygenerowac 10 roznych dlugosci ciagow - wystarczy zmienic range
+        #n += j * 250
+        #print('n: ', n)
+        for i in range(10):
+            print("Pomiar nr: ", i + 1)
+            if ciag == 1:
+                tab = losowe(1, 10 * n, n)
+                rodzaj_sortowania(rodzaj, ans, tab)
+            elif ciag == 2:
+                tab = rosnaca(n)
+                rodzaj_sortowania(rodzaj, ans, tab)
+            elif ciag == 3:
+                tab = malejaca(n)
+                rodzaj_sortowania(rodzaj, ans, tab)
+            elif ciag == 4:
+                tab = a_ksztaltna(n)
+                rodzaj_sortowania(rodzaj, ans, tab)
+            elif ciag == 5:
+                tab = v_ksztaltna(n)
+                rodzaj_sortowania(rodzaj, ans, tab)
+            print('______________________________')
+        print('Srednia czasu: ', statistics.mean(czasy))
+        print('Odchylenie stardardowe: ', statistics.stdev(czasy))
         print('______________________________')
-    print('Srednia czasu: ', statistics.mean(czasy))
-    print('Odchylenie stardardowe: ', statistics.stdev(czasy))
-    print('______________________________')
-    print('Srednia liczba operacji: ', statistics.mean(operacje))
-    print('Odchylenie stardardowe: ', statistics.stdev(operacje))
+        print('Srednia liczba operacji: ', statistics.mean(operacje))
+        print('Odchylenie stardardowe: ', statistics.stdev(operacje))
+        print('______________________________')
+        #n = 250
+        czasy = []
+        operacje = []
