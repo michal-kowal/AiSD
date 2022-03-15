@@ -1,8 +1,9 @@
 import random
 import time
 import sys
+import statistics
 
-sys.setrecursionlimit(100000)
+sys.setrecursionlimit(10000000)
 
 
 # generatory danych
@@ -52,6 +53,7 @@ def v_ksztaltna(length):
 
 # insertion sort
 def insertion_sort(array, tryb):
+    global czasy, operacje
     zamian = 0
     porownan = 0
     start = time.time()
@@ -70,6 +72,8 @@ def insertion_sort(array, tryb):
     print("czas operacji: ", (end - start))
     print("ilosc zamian: ", zamian)
     print("ilosc porownan: ", porownan)
+    czasy.append(end - start)
+    operacje.append(zamian + porownan)
     if tryb == 't':
         print(*array)
     return array
@@ -112,12 +116,14 @@ def merge_sort(array):
 
 
 def pomiary_merge_sort(mer_list, tryb):
-    global porownan_merge, scalen_merge
+    global porownan_merge, scalen_merge, czasy, operacje
     start = time.time()
     sort_list = merge_sort(mer_list)
     end = time.time()
     print("czas operacji: ", (end - start))
     print("liczba porownan: ", porownan_merge)
+    czasy.append(end - start)
+    operacje.append(porownan_merge)
     if tryb == 't':
         print("liczba scalen: ", scalen_merge)
         print('Ciag wyjsciowy: ', *sort_list)
@@ -148,7 +154,7 @@ def heap(array, n, i):
 
 
 def heap_sort(array, tryb):
-    global zamian_heap, porownan_heap
+    global zamian_heap, porownan_heap, czasy, operacje
     n = len(array)
     start = time.time()
     for i in range(int(n / 2) - 1, -1, -1):
@@ -161,6 +167,8 @@ def heap_sort(array, tryb):
     print('Czas operacji: ', end - start)
     print('Porownan: ', porownan_heap)
     print('Zamian: ', zamian_heap)
+    czasy.append(end - start)
+    operacje.append(porownan_heap + zamian_heap)
     if tryb == 't':
         print('Ciag wyjsciowy: ', *array)
     zamian_heap = 0
@@ -169,6 +177,7 @@ def heap_sort(array, tryb):
 
 # SHELL SORT KNUTH SEQUENCE
 def shell_sort(array, tryb):
+    global czasy, operacje
     porownan_shell = 0
     zamian_shell = 0
     start = time.time()
@@ -194,6 +203,8 @@ def shell_sort(array, tryb):
     print("czas operacji: ", end - start)
     print("porownan: ", porownan_shell)
     print("zamian: ", zamian_shell)
+    czasy.append(end - start)
+    operacje.append(porownan_shell + zamian_shell)
     if tryb == 't':
         print('Ciag wyjsciowy: ', *array)
 
@@ -226,13 +237,15 @@ def quick_sort(array, low, high, tryb):
 
 
 def pomiary_quick_sort(array, low, high, tryb):
-    global qsort_zamian, qsort_porownan
+    global qsort_zamian, qsort_porownan, czasy, operacje
     start = time.time()
     quick_sort(array, low,  high, tryb)
     end = time.time()
     print("Porownan: ", qsort_porownan)
     print("Zamian: ", qsort_zamian)
     print("czas operacji: ", end - start)
+    czasy.append(end - start)
+    operacje.append(qsort_porownan + qsort_zamian)
     if tryb == 't':
         print('Ciag wyjsciowy: ', *array)
     qsort_porownan = 0
@@ -278,6 +291,8 @@ elif ans == 'n':
     print('Wybierz rodzaj sortowania: 1) Merge sort 2) Heap sort 3) Insertion sort 4) Shell sort 5) Quick sort')
     rodzaj = int(input())
     print('_______________________________________________________________________')
+    czasy = []
+    operacje = []
     for i in range(10):
         print("Pomiar nr: ", i + 1)
         if ciag == 1:
@@ -296,3 +311,8 @@ elif ans == 'n':
             tab = v_ksztaltna(n)
             rodzaj_sortowania(rodzaj, ans, tab)
         print('______________________________')
+    print('Srednia czasu: ', statistics.mean(czasy))
+    print('Odchylenie stardardowe: ', statistics.stdev(czasy))
+    print('______________________________')
+    print('Srednia liczba operacji: ', statistics.mean(operacje))
+    print('Odchylenie stardardowe: ', statistics.stdev(operacje))
