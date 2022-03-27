@@ -69,6 +69,15 @@ def maksymalny(tab):
     print("============================================")
 
 
+def in_order(tab, left_index, res):
+    if tab[left_index][2] is not None:
+        in_order(tab, tab[left_index][2], res)
+    res.append(tab[left_index][0])
+    if tab[left_index][3] is not None:
+        in_order(tab, tab[left_index][3], res)
+    return res
+
+
 def menu():
     powtorz = True
     while powtorz:
@@ -124,6 +133,15 @@ def menu():
             minimalny(drzewo)
         elif procedura == "2":
             maksymalny(drzewo)
+        elif procedura == "4":
+            res = []
+            start_in_order = time.time()
+            in_order(drzewo, 0, res)
+            end_in_order = time.time()
+            print()
+            print("Elementy drzewa w porzadku in-order: ", *res)
+            print("Czas operacji: ", end_in_order - start_in_order)
+            print()
         elif procedura == "9":
             powtorz = False
         else:
