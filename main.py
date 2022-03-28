@@ -2,80 +2,59 @@ import random
 import time
 
 
-def bst(elementy):
-    # wezel: [klucz, rodzic, lewy, prawy]
-    drzewo = {}
-    drzewo[0] = [elementy[0], None, None, None]
-    for i in range(1, len(elementy)):
-        rodzic = 0
-        drzewo[i] = [elementy[i], None, None, None]
-        while True:
-            if elementy[i] < drzewo[rodzic][0]:
-                if drzewo[rodzic][2] is None:
-                    drzewo[i][1] = rodzic
-                    drzewo[rodzic][2] = i
-                    break
-                else:
-                    rodzic = drzewo[rodzic][2]
-            else:
-                if drzewo[rodzic][3] is None:
-                    drzewo[i][1] = rodzic
-                    drzewo[rodzic][3] = i
-                    break
-                else:
-                    rodzic = drzewo[rodzic][3]
-    return drzewo
+class Node:
+    def __init__(self, key):
+        self.left = None
+        self.right = None
+        self.val = key
 
-
-def minimalny(tab):
-    start = time.time()
-    mini = tab[0][0]
-    path = []
-    index = 0
-    path.append(mini)
-    while True:
-        if tab[index][2] is not None:
-            index = tab[index][2]
-            mini = tab[index][0]
-            path.append(mini)
+def insert(root, key):
+    if root is None:
+        return Node(key)
+    else:
+        if root.val == key:
+            return root
+        elif root.val < key:
+            root.right = insert(root.right, key)
         else:
-            break
-    stop = time.time()
-    print("============================================")
-    print("Element minimalny: ", mini)
-    print("Sciezka poszukiwania: ", *path)
-    print("Czas operacji: ", stop-start)
-    print("============================================")
+            root.left = insert(root.left, key)
+    return root
 
-
-def maksymalny(tab):
+def minimal(wezel):
+    print()
+    print("Sciezka poszukiwania:", end=" ")
     start = time.time()
-    maxi = tab[0][0]
-    path = []
-    index = 0
-    path.append(maxi)
-    while True:
-        if tab[index][3] is not None:
-            index = tab[index][3]
-            maxi = tab[index][0]
-            path.append(maxi)
-        else:
-            break
-    stop = time.time()
-    print("============================================")
-    print("Element maksymalny: ", maxi)
-    print("Sciezka poszukiwania: ", *path)
-    print("Czas operacji: ", stop - start)
-    print("============================================")
+    obecny = wezel
+    print(obecny.val, end=" ")
+    while obecny.left is not None:
+        obecny = obecny.left
+        print(obecny.val, end=" ")
+    end = time.time()
+    print("\nElement minimalny: ", obecny.val)
+    print("Czas poszukiwania: ", end - start)
+    print()
 
 
-def in_order(tab, left_index, res):
-    if tab[left_index][2] is not None:
-        in_order(tab, tab[left_index][2], res)
-    res.append(tab[left_index][0])
-    if tab[left_index][3] is not None:
-        in_order(tab, tab[left_index][3], res)
-    return res
+def maximal(wezel):
+    print()
+    print("Sciezka poszukiwania:", end=" ")
+    start = time.time()
+    obecny = wezel
+    print(obecny.val, end=" ")
+    while obecny.right is not None:
+        obecny = obecny.right
+        print(obecny.val, end=" ")
+    end = time.time()
+    print("\nElement maksymalny: ", obecny.val)
+    print("Czas poszukiwania: ", end - start)
+    print()
+
+
+def in_order(root):
+    if root:
+        in_order(root.left)
+        print(root.val, end=" ")
+        in_order(root.right)
 
 
 def menu():
@@ -107,16 +86,21 @@ def menu():
         typ = int(input())
         print()
         print("Dane wejsciowe: ",*tab)
-        print("format drzewa: {węzeł: [klucz, rodzic, lewy potomek, prawy potomek]}")
         if typ == 1:
-            # drzewo = avl(tab)
+            tab.sort()
+            #drzewo = insert(drzewo, mediana)
             powtorz = False
         elif typ == 2:
-            drzewo = bst(tab)
+            drzewo = Node(tab[0])
+            for i in range(1, len(tab)):
+                drzewo = insert(drzewo, tab[i])
             powtorz = False
         else:
             print("Wybierz poprawna opcje")
-        print(drzewo)
+        #print("K-klucz, P-przodek, PP-prawy potomek, LP-lewy potomek")
+        #for i in tab:
+        #    print("K:",i," P:",," PP:",," LP:",)
+        #print(drzewo.right.val)
         print()
     powtorz = True
     while powtorz:
@@ -130,16 +114,16 @@ def menu():
                           "[8] Równoważ drzewo przez rotacje (DSW) lub przez usuwanie korzenia\n"
                           "[9] Wyjście\n")
         if procedura == "1":
-            minimalny(drzewo)
+            minimal(drzewo)
         elif procedura == "2":
-            maksymalny(drzewo)
+            maximal(drzewo)
+            print("")
         elif procedura == "4":
-            res = []
+            print("Elementy drzewa w porzadku in-order:", end=" ")
             start_in_order = time.time()
-            in_order(drzewo, 0, res)
+            in_order(drzewo)
             end_in_order = time.time()
             print()
-            print("Elementy drzewa w porzadku in-order: ", *res)
             print("Czas operacji: ", end_in_order - start_in_order)
             print()
         elif procedura == "9":
