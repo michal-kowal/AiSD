@@ -3,9 +3,9 @@ import time
 
 
 class Node:
-    def __init__(self, key):
-        self.left = None
-        self.right = None
+    def __init__(self, key, left=None, right=None):
+        self.left = left
+        self.right = right
         self.val = key
 
 def insert(root, key):
@@ -20,19 +20,24 @@ def insert(root, key):
             root.left = insert(root.left, key)
     return root
 
-def minimal(wezel):
+def minimal(wezel,tryb):
     print()
-    print("Sciezka poszukiwania:", end=" ")
+    if tryb != "3":
+        print("Sciezka poszukiwania:", end=" ")
     start = time.time()
     obecny = wezel
-    print(obecny.val, end=" ")
+    if tryb != "3":
+        print(obecny.val, end=" ")
     while obecny.left is not None:
         obecny = obecny.left
-        print(obecny.val, end=" ")
+        if tryb != "3":
+            print(obecny.val, end=" ")
     end = time.time()
-    print("\nElement minimalny: ", obecny.val)
-    print("Czas poszukiwania: ", end - start)
-    print()
+    if tryb != "3":
+        print("\nElement minimalny: ", obecny.val)
+        print("Czas poszukiwania: ", end - start)
+        print()
+    return obecny
 
 
 def maximal(wezel):
@@ -49,13 +54,49 @@ def maximal(wezel):
     print("Czas poszukiwania: ", end - start)
     print()
 
-
+def deletion(root, key, tryb):
+    parent = None
+    curr = root
+    while curr and curr.val != key:
+        parent = curr
+        if key < curr.val:
+            curr = curr.left
+        else:
+            curr = curr.right
+    if curr is None:
+        return root
+    if curr.left is None and curr.right is None:
+        if curr != root:
+            if parent.left == curr:
+                parent.left = None
+            else:
+                parent.right = None
+        else:
+            root = None
+    elif curr.left and curr.right:
+        successor = minimal(curr.right, tryb)
+        val = successor.val
+        deletion(root, successor.val, tryb)
+        curr.val = val
+    else:
+        if curr.left:
+            child = curr.left
+        else:
+            child = curr.right
+        if curr != root:
+            if curr == parent.left:
+                parent.left = child
+            else:
+                parent.right = child
+        else:
+            root = child
+    return root
+ 
 def in_order(root):
     if root:
         in_order(root.left)
         print(root.val, end=" ")
         in_order(root.right)
-
 
 def menu():
     powtorz = True
@@ -97,10 +138,9 @@ def menu():
             powtorz = False
         else:
             print("Wybierz poprawna opcje")
-        #print("K-klucz, P-przodek, PP-prawy potomek, LP-lewy potomek")
-        #for i in tab:
-        #    print("K:",i," P:",," PP:",," LP:",)
+        #print(drzewo.val)
         #print(drzewo.right.val)
+        #print(drzewo.left.val)
         print()
     powtorz = True
     while powtorz:
@@ -114,10 +154,20 @@ def menu():
                           "[8] Równoważ drzewo przez rotacje (DSW) lub przez usuwanie korzenia\n"
                           "[9] Wyjście\n")
         if procedura == "1":
-            minimal(drzewo)
+            minimal(drzewo, procedura)
         elif procedura == "2":
             maximal(drzewo)
             print("")
+        elif procedura == "3":
+            remove_keys = list(map(int, input("podaj wartości kluczy do usunięcia: ").split()))
+            start_deletion = time.time()
+            for i in range(0, len(remove_keys)):
+                deletion(drzewo, remove_keys[i], procedura)
+            end_deletion = time.time()
+            print()
+            print("Czas operacji: ", end_deletion - start_deletion)
+            print(in_order(drzewo)) #Tutaj na razie printuje w in order bo nie ma innej możliwości sprawdzenia czy element jest usuwany
+            print()
         elif procedura == "4":
             print("Elementy drzewa w porzadku in-order:", end=" ")
             start_in_order = time.time()
