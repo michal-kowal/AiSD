@@ -20,7 +20,8 @@ def insert(root, key):
             root.left = insert(root.left, key)
     return root
 
-def minimal(wezel,tryb):
+
+def minimal(wezel, tryb):
     print()
     if tryb != "3":
         print("Sciezka poszukiwania:", end=" ")
@@ -98,11 +99,49 @@ def in_order(root):
         print(root.val, end=" ")
         in_order(root.right)
 
+<<<<<<< HEAD
 def pre_order(root):
     if root:
         print(root.val, end=" ")
         pre_order(root.left)
         pre_order(root.right)
+=======
+# level order w celu wyswietlania struktury drzewa
+def level_order(root):
+    h = height(root)
+    for i in range(1, h + 1):
+        print_current(root, i)
+
+
+def print_current(root, level):
+    if root is None:
+        return
+    if level == 1:
+        if root.left is None and root.right is not None:
+            print("K:", root.val, " LP:", root.left, " PP:", root.right.val)
+        elif root.left is not None and root.right is None:
+            print("K:", root.val, " LP:", root.left.val, " PP:", root.right)
+        elif root.left is not None and root.right is not None:
+            print("K:", root.val, " LP:", root.left.val, " PP:", root.right.val)
+        elif root.left is None and root.right is None:
+            print("K:", root.val, " LP:", root.left, " PP:", root.right)
+    elif level > 1:
+        print_current(root.left, level - 1)
+        print_current(root.right, level - 1)
+
+
+def height(node):
+    if node is None:
+        return 0
+    else:
+        lheight = height(node.left)
+        rheight = height(node.right)
+        if lheight > rheight:
+            return lheight + 1
+        else:
+            return rheight + 1
+
+>>>>>>> 7685bc66e6e16b13b53a03b99e77be48b195184e
 
 def menu():
     powtorz = True
@@ -132,21 +171,24 @@ def menu():
         print("[1] Skonstruuj drzewo AVL \n[2] Skonstruuj losowe drzewo BST")
         typ = int(input())
         print()
-        print("Dane wejsciowe: ",*tab)
         if typ == 1:
             tab.sort()
             #drzewo = insert(drzewo, mediana)
             powtorz = False
         elif typ == 2:
+            drzewo_start = time.time()
             drzewo = Node(tab[0])
             for i in range(1, len(tab)):
                 drzewo = insert(drzewo, tab[i])
+            drzewo_stop = time.time()
             powtorz = False
         else:
             print("Wybierz poprawna opcje")
-        #print(drzewo.val)
-        #print(drzewo.right.val)
-        #print(drzewo.left.val)
+        print("Czas operacji: ", drzewo_stop - drzewo_start)
+        if dane == "1":
+            print("Dane wejsciowe: ", *tab)
+            print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
+            level_order(drzewo)
         print()
     powtorz = True
     while powtorz:
@@ -172,7 +214,8 @@ def menu():
             end_deletion = time.time()
             print()
             print("Czas operacji: ", end_deletion - start_deletion)
-            print(in_order(drzewo)) #Tutaj na razie printuje w in order bo nie ma innej możliwości sprawdzenia czy element jest usuwany
+            print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
+            level_order(drzewo)
             print()
         elif procedura == "4":
             print("Elementy drzewa w porzadku in-order:", end=" ")
