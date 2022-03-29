@@ -99,13 +99,19 @@ def in_order(root):
         print(root.val, end=" ")
         in_order(root.right)
 
-<<<<<<< HEAD
 def pre_order(root):
     if root:
         print(root.val, end=" ")
         pre_order(root.left)
         pre_order(root.right)
-=======
+
+def post_order_deletion(root):
+    if root:
+        post_order_deletion(root.left)
+        post_order_deletion(root.right)
+        print(root.val)
+        root.val = None
+
 # level order w celu wyswietlania struktury drzewa
 def level_order(root):
     h = height(root)
@@ -141,7 +147,6 @@ def height(node):
         else:
             return rheight + 1
 
->>>>>>> 7685bc66e6e16b13b53a03b99e77be48b195184e
 
 def menu():
     powtorz = True
@@ -233,6 +238,15 @@ def menu():
             print()
             print("Czas operacji: ", end_pre_order - start_pre_order)
             print()
+        elif procedura == "6":
+            print()
+            print("Kolejność usuwania elementów: ")
+            start_POD = time.time()
+            post_order_deletion(drzewo)
+            end_POD = time.time()
+            print("Czas operacji: ", end_POD - start_POD)
+            print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
+            level_order(drzewo)
         elif procedura == "9":
             powtorz = False
         else:
