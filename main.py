@@ -98,6 +98,12 @@ def in_order(root):
         print(root.val, end=" ")
         in_order(root.right)
 
+def pre_order(root):
+    if root:
+        print(root.val, end=" ")
+        pre_order(root.left)
+        pre_order(root.right)
+
 def menu():
     powtorz = True
     while powtorz:
@@ -175,6 +181,14 @@ def menu():
             end_in_order = time.time()
             print()
             print("Czas operacji: ", end_in_order - start_in_order)
+            print()
+        elif procedura == "5":
+            print("Elementy drzewa w porzadku pre-order:", end=" ")
+            start_pre_order = time.time()
+            pre_order(drzewo)
+            end_pre_order = time.time()
+            print()
+            print("Czas operacji: ", end_pre_order - start_pre_order)
             print()
         elif procedura == "9":
             powtorz = False
