@@ -1,4 +1,6 @@
+import math
 import random
+import statistics
 import time
 
 
@@ -156,6 +158,24 @@ def height(node):
             return rheight + 1
 
 
+def mediana(tab, lr):
+    global med
+    #print(tab)
+    if len(tab) > 1:
+        if len(tab) % 2 == 1:
+            median = math.ceil(len(tab) / 2) - 1
+        else:
+            median = math.ceil(len(tab) / 2) - 1
+        #print(tab[median])
+        med.append(tab[median])
+        if len(tab[:median]) >= 1:
+            mediana(tab[:median], lr)
+        if len(tab[median + 1:]) >= 1:
+            mediana(tab[median + 1:], lr)
+    elif len(tab) == 1:
+        med.append(tab[0])
+
+
 def menu():
     powtorz = True
     while powtorz:
@@ -185,6 +205,29 @@ def menu():
         typ = int(input())
         print()
         if typ == 1:
+            global med
+            med = []
+            drzewo_start = time.time()
+            tab.sort()
+            mediana(tab, 'l')
+            med_final = []
+            if len(med) % 2 == 1:
+                med_final.append(med[0])
+                j = len(med)//2 + 1
+                for i in range(1, len(med)//2 + 1):
+                    med_final.append(med[i])
+                    med_final.append(med[j])
+                    j += 1
+            else:
+                j = len(med) // 2
+                for i in range(0, len(med) // 2):
+                    med_final.append(med[i])
+                    med_final.append(med[j])
+                    j += 1
+            drzewo = Node(med_final[0])
+            for i in range(1, len(med_final)):
+                drzewo = insert(drzewo, med_final[i])
+            drzewo_stop = time.time()
             powtorz = False
         elif typ == 2:
             drzewo_start = time.time()
@@ -260,6 +303,7 @@ def menu():
             print("Dane wyjściowe: ", pre_order(sub_root_pre_order(drzewo, key)))
             end_SRPO = time.time()
             print("Czas operacji: ", end_SRPO - start_SRPO)
+            print()
         elif procedura == "9":
             powtorz = False
         else:
