@@ -1,4 +1,6 @@
+import math
 import random
+import statistics
 import time
 
 
@@ -120,7 +122,7 @@ def sub_root_pre_order(root, key):
         return sub_root_pre_order(root.right, key)
     return sub_root_pre_order(root.left, key)
 
-#def DSW()
+
 
 # level order w celu wyswietlania struktury drzewa
 def level_order(root):
@@ -158,6 +160,24 @@ def height(node):
             return rheight + 1
 
 
+def mediana(tab, lr):
+    global med
+    #print(tab)
+    if len(tab) > 1:
+        if len(tab) % 2 == 1:
+            median = math.ceil(len(tab) / 2) - 1
+        else:
+            median = math.ceil(len(tab) / 2) - 1
+        #print(tab[median])
+        med.append(tab[median])
+        if len(tab[:median]) >= 1:
+            mediana(tab[:median], lr)
+        if len(tab[median + 1:]) >= 1:
+            mediana(tab[median + 1:], lr)
+    elif len(tab) == 1:
+        med.append(tab[0])
+
+
 def menu():
     powtorz = True
     while powtorz:
@@ -187,6 +207,29 @@ def menu():
         typ = int(input())
         print()
         if typ == 1:
+            global med
+            med = []
+            drzewo_start = time.time()
+            tab.sort()
+            mediana(tab, 'l')
+            med_final = []
+            if len(med) % 2 == 1:
+                med_final.append(med[0])
+                j = len(med)//2 + 1
+                for i in range(1, len(med)//2 + 1):
+                    med_final.append(med[i])
+                    med_final.append(med[j])
+                    j += 1
+            else:
+                j = len(med) // 2
+                for i in range(0, len(med) // 2):
+                    med_final.append(med[i])
+                    med_final.append(med[j])
+                    j += 1
+            drzewo = Node(med_final[0])
+            for i in range(1, len(med_final)):
+                drzewo = insert(drzewo, med_final[i])
+            drzewo_stop = time.time()
             powtorz = False
         elif typ == 2:
             drzewo_start = time.time()
@@ -256,14 +299,17 @@ def menu():
             print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
             level_order(drzewo)
         elif procedura == "7":
+            print(level_order(drzewo))
+            print()
             key = int(input("Podaj od wartość klucza od którego ma się stworzyć poddrzewo: "))
             print()
+            print("Dane wyjściowe: ")
             start_SRPO = time.time()
-            print("Dane wyjściowe: ", pre_order(sub_root_pre_order(drzewo, key)))
+            print(pre_order(sub_root_pre_order(drzewo, key)))
             end_SRPO = time.time()
             print("Czas operacji: ", end_SRPO - start_SRPO)
-        #elif procedura = "8":
-            #DSW()
+        elif procedura = "8":
+            print()
         elif procedura == "9":
             powtorz = False
         else:
