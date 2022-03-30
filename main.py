@@ -7,6 +7,7 @@ class Node:
         self.left = left
         self.right = right
         self.val = key
+        self.height = 1
 
 def insert(root, key):
     if root is None:
@@ -112,6 +113,13 @@ def post_order_deletion(root):
         print(root.val)
         root.val = None
 
+def sub_root_pre_order(root, key):
+    if root is None or root.val == key:
+        return root
+    if root.val < key:
+        return sub_root_pre_order(root.right, key)
+    return sub_root_pre_order(root.left, key)
+
 # level order w celu wyswietlania struktury drzewa
 def level_order(root):
     h = height(root)
@@ -177,8 +185,6 @@ def menu():
         typ = int(input())
         print()
         if typ == 1:
-            tab.sort()
-            #drzewo = insert(drzewo, mediana)
             powtorz = False
         elif typ == 2:
             drzewo_start = time.time()
@@ -247,6 +253,13 @@ def menu():
             print("Czas operacji: ", end_POD - start_POD)
             print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
             level_order(drzewo)
+        elif procedura == "7":
+            key = int(input("Podaj od wartość klucza od którego ma się stworzyć poddrzewo: "))
+            print()
+            start_SRPO = time.time()
+            print("Dane wyjściowe: ", pre_order(sub_root_pre_order(drzewo, key)))
+            end_SRPO = time.time()
+            print("Czas operacji: ", end_SRPO - start_SRPO)
         elif procedura == "9":
             powtorz = False
         else:
