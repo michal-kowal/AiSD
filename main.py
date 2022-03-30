@@ -120,6 +120,8 @@ def sub_root_pre_order(root, key):
         return sub_root_pre_order(root.right, key)
     return sub_root_pre_order(root.left, key)
 
+#def DSW()
+
 # level order w celu wyswietlania struktury drzewa
 def level_order(root):
     h = height(root)
@@ -260,6 +262,8 @@ def menu():
             print("Dane wyjściowe: ", pre_order(sub_root_pre_order(drzewo, key)))
             end_SRPO = time.time()
             print("Czas operacji: ", end_SRPO - start_SRPO)
+        #elif procedura = "8":
+            #DSW()
         elif procedura == "9":
             powtorz = False
         else:
