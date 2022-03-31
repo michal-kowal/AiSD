@@ -25,7 +25,6 @@ def insert(root, key):
 
 
 def minimal(wezel, tryb):
-    print()
     if tryb != "3":
         print("Sciezka poszukiwania:", end=" ")
     start = time.time()
@@ -113,7 +112,8 @@ def post_order_deletion(root):
         post_order_deletion(root.left)
         post_order_deletion(root.right)
         print(root.val)
-        root.val = None
+        #root.val = None
+        deletion(root, root.val, "3")
 
 def sub_root_pre_order(root, key):
     if root is None or root.val == key:
@@ -121,8 +121,6 @@ def sub_root_pre_order(root, key):
     if root.val < key:
         return sub_root_pre_order(root.right, key)
     return sub_root_pre_order(root.left, key)
-
-
 
 # level order w celu wyswietlania struktury drzewa
 def level_order(root):
@@ -296,8 +294,8 @@ def menu():
             post_order_deletion(drzewo)
             end_POD = time.time()
             print("Czas operacji: ", end_POD - start_POD)
-            print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
-            level_order(drzewo)
+            #print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
+            #level_order(drzewo)
         elif procedura == "7":
             print(level_order(drzewo))
             print()
@@ -308,8 +306,11 @@ def menu():
             print(pre_order(sub_root_pre_order(drzewo, key)))
             end_SRPO = time.time()
             print("Czas operacji: ", end_SRPO - start_SRPO)
-        elif procedura = "8":
-            print()
+        elif procedura == "8":
+            print(pre_order(drzewo))
+            start_DSW = time.time()
+            end_DSW = time.time()
+            print("Czas operacji: ", end_DSW - start_DSW)
         elif procedura == "9":
             powtorz = False
         else:
