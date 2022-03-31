@@ -220,7 +220,7 @@ def balance(drzewo):
     m = math.pow(2, h) - 1
     compress(grand, count - m)
     i = m / 2
-    while i > 0:
+    while i > 1:
         compress(grand, i)
         i = i / 2
     return grand.right
