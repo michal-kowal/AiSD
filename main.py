@@ -11,6 +11,7 @@ class Node:
         self.val = key
         self.height = 1
 
+
 def insert(root, key):
     if root is None:
         return Node(key)
@@ -57,6 +58,7 @@ def maximal(wezel):
     print("Czas poszukiwania: ", end - start)
     print()
 
+
 def deletion(root, key, tryb):
     parent = None
     curr = root
@@ -94,12 +96,14 @@ def deletion(root, key, tryb):
         else:
             root = child
     return root
- 
+
+
 def in_order(root):
     if root:
         in_order(root.left)
         print(root.val, end=" ")
         in_order(root.right)
+
 
 def pre_order(root):
     if root:
@@ -107,13 +111,15 @@ def pre_order(root):
         pre_order(root.left)
         pre_order(root.right)
 
+
 def post_order_deletion(root):
     if root:
         post_order_deletion(root.left)
         post_order_deletion(root.right)
         print(root.val)
-        #root.val = None
+        # root.val = None
         deletion(root, root.val, "3")
+
 
 def sub_root_pre_order(root, key):
     if root is None or root.val == key:
@@ -121,6 +127,7 @@ def sub_root_pre_order(root, key):
     if root.val < key:
         return sub_root_pre_order(root.right, key)
     return sub_root_pre_order(root.left, key)
+
 
 # level order w celu wyswietlania struktury drzewa
 def level_order(root):
@@ -160,13 +167,13 @@ def height(node):
 
 def mediana(tab, lr):
     global med
-    #print(tab)
+    # print(tab)
     if len(tab) > 1:
         if len(tab) % 2 == 1:
             median = math.ceil(len(tab) / 2) - 1
         else:
             median = math.ceil(len(tab) / 2) - 1
-        #print(tab[median])
+        # print(tab[median])
         med.append(tab[median])
         if len(tab[:median]) >= 1:
             mediana(tab[:median], lr)
@@ -174,6 +181,49 @@ def mediana(tab, lr):
             mediana(tab[median + 1:], lr)
     elif len(tab) == 1:
         med.append(tab[0])
+
+
+def vine(grand):
+    count = 0
+    tmp = grand.right
+    while tmp:
+        if tmp.left:
+            oldtmp = tmp
+            tmp = tmp.left
+            oldtmp.left = tmp.right
+            tmp.right = oldtmp
+            grand.right = tmp
+        else:
+            count += 1
+            grand = tmp
+            tmp = tmp.right
+    return count
+
+
+def compress(grand, m):
+    tmp = grand.right
+    for i in range(0, int(m)):
+        old_tmp = tmp
+        tmp = tmp.right
+        grand.right = tmp
+        old_tmp.right = tmp.left
+        tmp.left = old_tmp
+        grand = tmp
+        tmp = tmp.right
+
+
+def balance(drzewo):
+    grand = Node(0)
+    grand.right = drzewo
+    count = vine(grand)
+    h = int(math.log2(count + 1))
+    m = math.pow(2, h) - 1
+    compress(grand, count - m)
+    i = m / 2
+    while i > 0:
+        compress(grand, i)
+        i = i / 2
+    return grand.right
 
 
 def menu():
@@ -189,7 +239,7 @@ def menu():
                 else:
                     powtorz = False
             elif dane == "2":
-                #Generowanie danych
+                # Generowanie danych
                 tab = []
                 n = int(input("Podaj dlugosc ciagu:\n"))
                 for i in range(n):
@@ -201,48 +251,51 @@ def menu():
             print("Nieprawidłowe dane wejściowe")
     powtorz = True
     while powtorz:
-        print("[1] Skonstruuj drzewo AVL \n[2] Skonstruuj losowe drzewo BST")
-        typ = int(input())
-        print()
-        if typ == 1:
-            global med
-            med = []
-            drzewo_start = time.time()
-            tab.sort()
-            mediana(tab, 'l')
-            med_final = []
-            if len(med) % 2 == 1:
-                med_final.append(med[0])
-                j = len(med)//2 + 1
-                for i in range(1, len(med)//2 + 1):
-                    med_final.append(med[i])
-                    med_final.append(med[j])
-                    j += 1
+        try:
+            print("[1] Skonstruuj drzewo AVL \n[2] Skonstruuj losowe drzewo BST")
+            typ = int(input())
+            print()
+            if typ == 1:
+                global med
+                med = []
+                drzewo_start = time.time()
+                tab.sort()
+                mediana(tab, 'l')
+                med_final = []
+                if len(med) % 2 == 1:
+                    med_final.append(med[0])
+                    j = len(med) // 2 + 1
+                    for i in range(1, len(med) // 2 + 1):
+                        med_final.append(med[i])
+                        med_final.append(med[j])
+                        j += 1
+                else:
+                    j = len(med) // 2
+                    for i in range(0, len(med) // 2):
+                        med_final.append(med[i])
+                        med_final.append(med[j])
+                        j += 1
+                drzewo = Node(med_final[0])
+                for i in range(1, len(med_final)):
+                    drzewo = insert(drzewo, med_final[i])
+                drzewo_stop = time.time()
+                powtorz = False
+            elif typ == 2:
+                drzewo_start = time.time()
+                drzewo = Node(tab[0])
+                for i in range(1, len(tab)):
+                    drzewo = insert(drzewo, tab[i])
+                drzewo_stop = time.time()
+                powtorz = False
             else:
-                j = len(med) // 2
-                for i in range(0, len(med) // 2):
-                    med_final.append(med[i])
-                    med_final.append(med[j])
-                    j += 1
-            drzewo = Node(med_final[0])
-            for i in range(1, len(med_final)):
-                drzewo = insert(drzewo, med_final[i])
-            drzewo_stop = time.time()
-            powtorz = False
-        elif typ == 2:
-            drzewo_start = time.time()
-            drzewo = Node(tab[0])
-            for i in range(1, len(tab)):
-                drzewo = insert(drzewo, tab[i])
-            drzewo_stop = time.time()
-            powtorz = False
-        else:
+                print("Wybierz poprawna opcje")
+            print("Czas operacji: ", drzewo_stop - drzewo_start)
+            if dane == "1":
+                print("Dane wejsciowe: ", *tab)
+                print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
+                level_order(drzewo)
+        except ValueError:
             print("Wybierz poprawna opcje")
-        print("Czas operacji: ", drzewo_stop - drzewo_start)
-        if dane == "1":
-            print("Dane wejsciowe: ", *tab)
-            print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
-            level_order(drzewo)
         print()
     powtorz = True
     while powtorz:
@@ -253,7 +306,7 @@ def menu():
                           "[5] Wypisz wszystkie elementy drzewa w porządku pre-order\n"
                           "[6] Usuń drzewo element po elemencie (post-order)\n"
                           "[7] Wypisz w porządku pre-order poddrzewa o danym kluczu\n"
-                          "[8] Równoważ drzewo przez rotacje (DSW) lub przez usuwanie korzenia\n"
+                          "[8] Równoważ drzewo (DSW)\n"
                           "[9] Wyjście\n")
         if procedura == "1":
             minimal(drzewo, procedura)
@@ -294,24 +347,33 @@ def menu():
             post_order_deletion(drzewo)
             end_POD = time.time()
             print("Czas operacji: ", end_POD - start_POD)
-            #print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
-            #level_order(drzewo)
+            # print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
+            # level_order(drzewo)
         elif procedura == "7":
-            print(level_order(drzewo))
-            print()
+            level_order(drzewo)
             key = int(input("Podaj od wartość klucza od którego ma się stworzyć poddrzewo: "))
             print()
-            print("Dane wyjściowe: ")
+            print("Dane wyjściowe: ", end=" ")
             start_SRPO = time.time()
-            print(pre_order(sub_root_pre_order(drzewo, key)))
+            pre_order(sub_root_pre_order(drzewo, key))
             end_SRPO = time.time()
-            print("Czas operacji: ", end_SRPO - start_SRPO)
+            print("\nCzas operacji: ", end_SRPO - start_SRPO)
+            print()
         elif procedura == "8":
-            print(pre_order(drzewo))
+            print()
+            print("Pre-order przed:", end=" ")
+            pre_order(drzewo)
             start_DSW = time.time()
+            drzewo = balance(drzewo)
             end_DSW = time.time()
-            print("Czas operacji: ", end_DSW - start_DSW)
+            #print("\n")
+            #level_order(drzewo)
+            print("Pre-order po:", end=" ")
+            pre_order(drzewo)
+            print("\nCzas operacji: ", end_DSW - start_DSW)
+            print()
         elif procedura == "9":
+            print("(: Zapraszamy ponownie :)")
             powtorz = False
         else:
             print("Wybierz poprawna opcje")
