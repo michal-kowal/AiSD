@@ -26,18 +26,18 @@ def insert(root, key):
 
 
 def minimal(wezel, tryb):
-    if tryb != "3":
+    if tryb != "3" and tryb != "6":
         print("Sciezka poszukiwania:", end=" ")
     start = time.time()
     obecny = wezel
-    if tryb != "3":
+    if tryb != "3" and tryb != "6":
         print(obecny.val, end=" ")
     while obecny.left is not None:
         obecny = obecny.left
-        if tryb != "3":
+        if tryb != "3" and tryb != "6":
             print(obecny.val, end=" ")
     end = time.time()
-    if tryb != "3":
+    if tryb != "3" and tryb != "6":
         print("\nElement minimalny: ", obecny.val)
         print("Czas poszukiwania: ", end - start)
         print()
@@ -117,9 +117,8 @@ def post_order_deletion(root):
         post_order_deletion(root.left)
         post_order_deletion(root.right)
         print(root.val)
-        # root.val = None
+        #root.val = None
         deletion(root, root.val, "3")
-
 
 def sub_root_pre_order(root, key):
     if root is None or root.val == key:
@@ -182,7 +181,7 @@ def mediana(tab, lr):
     elif len(tab) == 1:
         med.append(tab[0])
 
-
+# DSW
 def vine(grand):
     count = 0
     tmp = grand.right
@@ -255,6 +254,9 @@ def menu():
             print("[1] Skonstruuj drzewo AVL \n[2] Skonstruuj losowe drzewo BST")
             typ = int(input())
             print()
+            while typ not in [1, 2]:
+                print("Wybierz poprawną opcję")
+                typ = int(input())
             if typ == 1:
                 global med
                 med = []
@@ -314,7 +316,18 @@ def menu():
             maximal(drzewo)
             print("")
         elif procedura == "3":
-            remove_keys = list(map(int, input("podaj wartości kluczy do usunięcia: ").split()))
+            level_order(drzewo)
+            powt = True
+            while powt:
+                try:
+                    remove_keys = list(map(int, input("podaj wartości kluczy do usunięcia: ").split()))
+                    for i in range(0, len(remove_keys)):
+                        while remove_keys[i] not in tab:
+                            print("Podane klucz(e) nie są w drzewie")
+                            remove_keys = list(map(int, input("podaj wartości kluczy do usunięcia: ").split()))
+                    powt = False
+                except ValueError:
+                    print("Należy podać liczby")
             start_deletion = time.time()
             for i in range(0, len(remove_keys)):
                 deletion(drzewo, remove_keys[i], procedura)
@@ -344,20 +357,39 @@ def menu():
             print()
             print("Kolejność usuwania elementów: ")
             start_POD = time.time()
-            post_order_deletion(drzewo)
+            #for i in range(0, len(tab)):
+            #    deletion(drzewo, post_order(drzewo), procedura)
+            drzewo = post_order_deletion(drzewo)
             end_POD = time.time()
             print("Czas operacji: ", end_POD - start_POD)
-            # print("Struktura drzewa: Klucz, Lewy Potomek, Prawy Potomek")
-            # level_order(drzewo)
+            print()
+            powtorz = False
+            print("Z powodu usunięcia drzewa należy wygenerować nowe lub zakończyć program.")
+            print("[1] Wygeneruj nowe drzewo")
+            print("[2] Wyjście")
+            dane = input()
+            while dane not in ["1", "2"]:
+                print("Nieprawidłowe dane")
+                dane = input()
+            if dane == "1":
+                menu()
+            else:
+                powtorz = False
         elif procedura == "7":
             level_order(drzewo)
-            key = int(input("Podaj od wartość klucza od którego ma się stworzyć poddrzewo: "))
+            key = int(input("Podaj wartość klucza od którego ma się stworzyć poddrzewo: "))
+            while key not in tab:
+                print("Nieprawidłowe dane")
+                key = int(input("Podaj wartość klucza od którego ma się stworzyć poddrzewo: "))
             print()
             print("Dane wyjściowe: ", end=" ")
             start_SRPO = time.time()
-            pre_order(sub_root_pre_order(drzewo, key))
+            drzewo = sub_root_pre_order(drzewo, key)
+            pre_order(drzewo)
             end_SRPO = time.time()
             print("\nCzas operacji: ", end_SRPO - start_SRPO)
+            print()
+            level_order(drzewo)
             print()
         elif procedura == "8":
             print()
@@ -366,9 +398,7 @@ def menu():
             start_DSW = time.time()
             drzewo = balance(drzewo)
             end_DSW = time.time()
-            #print("\n")
-            #level_order(drzewo)
-            print("Pre-order po:", end=" ")
+            print("\nPre-order po:", end=" ")
             pre_order(drzewo)
             print("\nCzas operacji: ", end_DSW - start_DSW)
             print()
