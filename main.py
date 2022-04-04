@@ -260,8 +260,8 @@ def menu():
             if typ == 1:
                 global med
                 med = []
-                drzewo_start = time.time()
                 tab.sort()
+                drzewo_start = time.time()
                 mediana(tab, 'l')
                 med_final = []
                 if len(med) % 2 == 1:
