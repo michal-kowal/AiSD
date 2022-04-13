@@ -1,5 +1,5 @@
 # Program dziala na zasadzie listy nastepnikow, poprzednikow, listy braku incydencji. Uzyto do tego slownikow
-
+import random
 
 def generuj_listy(n, p, b):
     for i in n.keys():
@@ -13,6 +13,54 @@ def generuj_listy(n, p, b):
         for k in range(1, len(n) + 1):
             if k not in n[i] and k not in p[i]:
                 b[i].append(k)
+
+def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
+    #generuj macierz pustą
+    matrix = []
+    for i in range(0, n):
+        wiersz = []
+        for j in range(0, n+3):
+            wiersz.append(0)
+        matrix.append(wiersz)
+    #mordowanie z listą następników
+    for i in range(0, n):
+        if len(list(następniki.values())[i]) == 0:
+            continue
+        else:
+            matrix[i][n] = list(następniki.values())[i][0]
+    for i in range(0, n):
+        for j in list(następniki.values())[i]:
+            if len(list(następniki.values())[i]) == 0:
+                continue
+            else:
+                matrix[i][j-1] = list(następniki.values())[i][-1]
+    #mordowanie z listą poprzedników
+    for i in range(0, n):
+        if len(list(poprzedniki.values())[i]) == 0:
+            continue
+        else:
+            matrix[i][n+1] = list(poprzedniki.values())[i][0]
+    for i in range(0, n):
+        for j in list(poprzedniki.values())[i]:
+            if len(list(poprzedniki.values())[i]) == 0:
+                continue
+            else:
+                matrix[i][j-1] = (list(poprzedniki.values())[i][-1] + 5)
+    #mordowanie z listą bla bla bla
+    for i in range(0, n):
+        if len(list(bezincydejki.values())[i]) == 0:
+            continue
+        else:
+            matrix[i][n+2] = list(bezincydejki.values())[i][0]
+    for i in range(0, n):
+        for j in list(bezincydejki.values())[i]:
+            if len(list(bezincydejki.values())[i]) == 0:
+                continue
+            else:
+                matrix[i][j-1] = -(list(bezincydejki.values())[i][-1])
+    #PRRYNT
+    for i in range(len(matrix)):
+        print(*matrix[i])
 
 
 def macierz_sasiedztwa(n, p):
@@ -108,6 +156,7 @@ def menu():
             print("[1] Wygeneruj macierz grafu\n[2] Wygeneruj macierz sasiedztwa")
             wybor_macierz = input()
             if wybor_macierz == '1':
+                macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, l_wierzcholkow)
                 petla = False
             elif wybor_macierz == '2':
                 macierz_sasiedztwa(l_nastepnikow, l_poprzednikow)
