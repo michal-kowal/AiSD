@@ -68,10 +68,10 @@ def macierz_sasiedztwa(n, p):
     for i in range(len(n)):
         matrix.append([])
         for j in range(len(n)):
-            if j + 1 in n[i + 1]:
-                matrix[i].append(1)
-            elif j + 1 in p[i + 1]:
+            if j + 1 in p[i + 1]:
                 matrix[i].append(-1)
+            elif j + 1 in n[i + 1]:
+                matrix[i].append(1)
             else:
                 matrix[i].append(0)
     print("Macierz sasiedztwa:")
