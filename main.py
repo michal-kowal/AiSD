@@ -15,14 +15,14 @@ def generuj_listy(n, p, b):
                 b[i].append(k)
 
 def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
-    #generuj macierz pustą
+    # generuj macierz pustą
     matrix = []
     for i in range(0, n):
         wiersz = []
         for j in range(0, n+3):
             wiersz.append(0)
         matrix.append(wiersz)
-    #mordowanie z listą następników
+    # mordowanie z listą następników
     for i in range(0, n):
         if len(list(następniki.values())[i]) == 0:
             continue
@@ -34,7 +34,7 @@ def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
                 continue
             else:
                 matrix[i][j-1] = list(następniki.values())[i][-1]
-    #mordowanie z listą poprzedników
+    # mordowanie z listą poprzedników
     for i in range(0, n):
         if len(list(poprzedniki.values())[i]) == 0:
             continue
@@ -46,7 +46,7 @@ def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
                 continue
             else:
                 matrix[i][j-1] = (list(poprzedniki.values())[i][-1] + 5)
-    #mordowanie z listą bla bla bla
+    # mordowanie z listą bla bla bla
     for i in range(0, n):
         if len(list(bezincydejki.values())[i]) == 0:
             continue
@@ -58,7 +58,7 @@ def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
                 continue
             else:
                 matrix[i][j-1] = -(list(bezincydejki.values())[i][-1])
-    #PRRYNT
+    # PRRYNT
     for i in range(len(matrix)):
         print(*matrix[i])
 
@@ -76,6 +76,33 @@ def macierz_sasiedztwa(n, p):
                 matrix[i].append(0)
     print("Macierz sasiedztwa:")
     [print(*matrix[i]) for i in range(len(matrix))]
+    return matrix
+
+
+def szukaj_wierzcholka(macierz):
+    n = len(macierz)
+    for i in range(n):
+        if -1 in macierz[i]:
+            continue
+        else:
+            return i
+    return -1
+
+
+def DEL_msasiedztwa(macierz):
+    tab = []
+    num = []
+    [num.append(i + 1) for i in range(len(macierz))]
+    for i in range(len(macierz)):
+        res = szukaj_wierzcholka(macierz)
+        if res == -1:
+            return "Graf zawiera cykl. Sortowanie niemozliwe"
+        else:
+            tab.append(num[res])
+            for j in range(len(macierz)):
+                del macierz[j][res]
+            del macierz[res], num[res]
+    return tab
 
 
 def menu():
@@ -142,14 +169,14 @@ def menu():
                         err = True
                 l_nastepnikow[w_poczatkowy].append(w_koncowy)
             plik.close()
+            if err:
+                print("Podano bledna krawedz")
             if not err:
                 generuj_listy(l_nastepnikow, l_poprzednikow, l_b_incydencji)
             petla = False
         else:
             print('Nieprawidlowy wybor!')
-        print(l_nastepnikow)
-        print(l_poprzednikow)
-        print(l_b_incydencji)
+
     if not err:
         petla = True
         while petla:
@@ -159,9 +186,24 @@ def menu():
                 macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, l_wierzcholkow)
                 petla = False
             elif wybor_macierz == '2':
-                macierz_sasiedztwa(l_nastepnikow, l_poprzednikow)
+                macierz = macierz_sasiedztwa(l_nastepnikow, l_poprzednikow)
                 petla = False
             else:
                 print("Wybrano nieprawidlowa opcje")
+
+        petla = True
+        while petla:
+            print(
+                "[1] Sortowanie topologiczne z wykorzystaniem procedury wyszukiwania w glab [DFS]\n[2] Sortowanie topologiczne z wykorzystaniem algorytmu Kahna")
+            wybor_sort = input()
+            if wybor_sort == '1':
+                petla = False
+            elif wybor_sort == '2':
+                if wybor_macierz == '2':
+                    print(DEL_msasiedztwa(macierz))
+                petla = False
+            else:
+                print("Wybrano nieprawidlowa opcje")
+
 
 menu()
