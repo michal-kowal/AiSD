@@ -45,7 +45,7 @@ def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
             if len(list(poprzedniki.values())[i]) == 0:
                 continue
             else:
-                matrix[i][j-1] = (list(poprzedniki.values())[i][-1] + 5)
+                matrix[i][j-1] = (list(poprzedniki.values())[i][-1] + n)
     #mordowanie z listą bla bla bla
     for i in range(0, n):
         if len(list(bezincydejki.values())[i]) == 0:
@@ -89,6 +89,28 @@ def menu():
         opcja = input()
         if opcja == '1':    # Generuj graf
             petla = False
+            try:
+                l_wierzcholkow = int(input('Podaj liczbe wierzcholkow: '))
+            except ValueError:
+                print("Podano niepoprawne dane")
+                err = True
+                break
+            lista_wierzcholkow = []
+            for i in range(0, l_wierzcholkow):
+                lista_wierzcholkow.append(int(i+1))
+            for j in range(1, l_wierzcholkow+1):
+                #losowanie ile będzie nastepnikow dla wierzchołka#
+                los = random.choice(lista_wierzcholkow)
+                ##################################################
+                l_nastepnikow[j] = []
+                nastepniki = []
+                for i in range(0, los):
+                    num = random.choice(lista_wierzcholkow)
+                    if num != i and num not in nastepniki:
+                        nastepniki.append(num)
+                nastepniki.sort()
+                l_nastepnikow[j] = nastepniki
+            generuj_listy(l_nastepnikow, l_poprzednikow, l_b_incydencji)
         elif opcja == '2':
             try:
                 l_wierzcholkow = int(input('Podaj liczbe wierzcholkow: '))
