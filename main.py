@@ -133,7 +133,7 @@ def menu():
                 nastepniki = []
                 for i in range(0, los):
                     num = random.choice(lista_wierzcholkow)
-                    if num != i and num not in nastepniki:
+                    if num != j and num not in nastepniki:
                         nastepniki.append(num)
                 nastepniki.sort()
                 l_nastepnikow[j] = nastepniki
