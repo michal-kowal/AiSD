@@ -105,6 +105,54 @@ def DEL_msasiedztwa(macierz):
     return tab
 
 
+def szukaj_bialego_niezaleznego(macierz, kolorowanie):
+    n = len(macierz)
+    for i in range(n):
+        if -1 in macierz[i]:
+            continue
+        else:
+            if kolorowanie[i] == 0:
+                return i
+    return -1
+
+
+def koloruj(n, kolory, macierz, lista):
+    kolory[n] = 1
+    for i, nastepnik in enumerate(macierz[n]):
+        if nastepnik == 1 and kolory[i] == 0:
+            cykl = koloruj(i, kolory, macierz, lista)
+            if not cykl:
+                return False
+        elif nastepnik == 1 and kolory[i] == 1:
+            return False
+    kolory[n] = 2
+    lista.append(n + 1)
+    return True
+
+
+def DFS_msasiedztwa(macierz):
+    # 0-bialy 1-szary 2-czarny
+    kolory = []
+    lista = []
+    dalej = True
+    [kolory.append(0) for i in range(len(macierz))]
+    while dalej:
+        bialy = szukaj_bialego_niezaleznego(macierz, kolory)
+        if bialy == -1:
+            return "Graf zawiera cykl. Sortowanie niemozliwe"
+        else:
+            cykl = koloruj(bialy, kolory, macierz, lista)
+            if not cykl:
+                return "Graf zawiera cykl. Sortowanie niemozliwe"
+            dalej = False
+            for i in range(len(kolory)):
+                if kolory[i] == 0:
+                    dalej = True
+                    break
+    lista.reverse()
+    return lista
+
+
 def menu():
     petla = True
     l_nastepnikow = {}
@@ -205,7 +253,7 @@ def menu():
             print("[1] Wygeneruj macierz grafu\n[2] Wygeneruj macierz sasiedztwa")
             wybor_macierz = input()
             if wybor_macierz == '1':
-                macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, l_wierzcholkow)
+                macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, len(l_nastepnikow))
                 petla = False
             elif wybor_macierz == '2':
                 macierz = macierz_sasiedztwa(l_nastepnikow, l_poprzednikow)
@@ -218,7 +266,10 @@ def menu():
             print(
                 "[1] Sortowanie topologiczne z wykorzystaniem procedury wyszukiwania w glab [DFS]\n[2] Sortowanie topologiczne z wykorzystaniem algorytmu Kahna")
             wybor_sort = input()
+            print("Sortowanie:")
             if wybor_sort == '1':
+                if wybor_macierz == '2':
+                    print(DFS_msasiedztwa(macierz))
                 petla = False
             elif wybor_sort == '2':
                 if wybor_macierz == '2':
