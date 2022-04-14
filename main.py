@@ -3,6 +3,7 @@ import random
 
 def generuj_listy(n, p, b):
     for i in n.keys():
+        n[i].sort()
         p[i] = []
     for i in n.keys():
         for j in n[i]:
@@ -246,7 +247,9 @@ def menu():
             petla = False
         else:
             print('Nieprawidlowy wybor!')
-
+    #print(l_nastepnikow)
+    #print(l_poprzednikow)
+    #print(l_b_incydencji)
     if not err:
         petla = True
         while petla:
