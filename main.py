@@ -1,5 +1,7 @@
 # Program dziala na zasadzie listy nastepnikow, poprzednikow, listy braku incydencji. Uzyto do tego slownikow
 import random
+import math
+import time
 
 def generuj_listy(n, p, b):
     for i in n.keys():
@@ -15,7 +17,7 @@ def generuj_listy(n, p, b):
             if k not in n[i] and k not in p[i]:
                 b[i].append(k)
 
-def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
+def macierz_grafu(następniki, poprzedniki, bezincydejki, n, opcja):
     # generuj macierz pustą
     matrix = []
     for i in range(0, n):
@@ -60,11 +62,12 @@ def macierz_grafu(następniki, poprzedniki, bezincydejki, n):
             else:
                 matrix[i][j-1] = -(list(bezincydejki.values())[i][-1])
     # PRRYNT
-    for i in range(len(matrix)):
-        print(*matrix[i])
+    if opcja != '1':
+        for i in range(len(matrix)):
+            print(*matrix[i])
 
 
-def macierz_sasiedztwa(n, p):
+def macierz_sasiedztwa(n, p, opcja):
     matrix = []
     for i in range(len(n)):
         matrix.append([])
@@ -75,8 +78,9 @@ def macierz_sasiedztwa(n, p):
                 matrix[i].append(1)
             else:
                 matrix[i].append(0)
-    print("Macierz sasiedztwa:")
-    [print(*matrix[i]) for i in range(len(matrix))]
+    if opcja != '1':
+        print("Macierz sasiedztwa:")
+        [print(*matrix[i]) for i in range(len(matrix))]
     return matrix
 
 
@@ -153,6 +157,34 @@ def DFS_msasiedztwa(macierz):
     lista.reverse()
     return lista
 
+def generator_grafu(n, m):
+    #generuj pustą macierz sąsziedztwa
+    matrix = []
+    for i in range(0, n):
+        wiersz = []
+        for j in range(0, n):
+            wiersz.append(0)
+        matrix.append(wiersz)
+    #wstaw w losowe miejsca jedynki
+    for i in range(0, m):
+        j = random.randint(1, n-1)
+        k = random.randint(0, j-1)
+        while matrix[j][k] == 1:
+            j = random.randint(1, n-1)
+            k = random.randint(0, j-1)
+        matrix[j][k] = 1
+    #na podstawie macierzy sąsiedztwa odtwórz listę następników
+    l_nastepnikow = {}
+    for i in range(1, n+1):
+        nastepniki = []
+        for j in range(0, n):
+            if matrix[i-1][j] == 1:
+                nastepniki.append(j+1)
+        l_nastepnikow[i] = nastepniki
+    #for i in range(0, n):
+    #    print(*matrix[i])
+    #print(l_nastepnikow)
+    return l_nastepnikow
 
 def menu():
     petla = True
@@ -171,21 +203,8 @@ def menu():
                 print("Podano niepoprawne dane")
                 err = True
                 break
-            lista_wierzcholkow = []
-            for i in range(0, l_wierzcholkow):
-                lista_wierzcholkow.append(int(i+1))
-            for j in range(1, l_wierzcholkow+1):
-                #losowanie ile będzie nastepnikow dla wierzchołka#
-                los = random.choice(lista_wierzcholkow)
-                ##################################################
-                l_nastepnikow[j] = []
-                nastepniki = []
-                for i in range(0, los):
-                    num = random.choice(lista_wierzcholkow)
-                    if num != j and num not in nastepniki:
-                        nastepniki.append(num)
-                nastepniki.sort()
-                l_nastepnikow[j] = nastepniki
+            l_krawedzi = math.floor(((l_wierzcholkow*(l_wierzcholkow-1))/2)*0.5)
+            l_nastepnikow = generator_grafu(l_wierzcholkow, l_krawedzi)
             generuj_listy(l_nastepnikow, l_poprzednikow, l_b_incydencji)
         elif opcja == '2':
             try:
@@ -256,10 +275,10 @@ def menu():
             print("[1] Wygeneruj macierz grafu\n[2] Wygeneruj macierz sasiedztwa")
             wybor_macierz = input()
             if wybor_macierz == '1':
-                macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, len(l_nastepnikow))
+                macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, len(l_nastepnikow), opcja)
                 petla = False
             elif wybor_macierz == '2':
-                macierz = macierz_sasiedztwa(l_nastepnikow, l_poprzednikow)
+                macierz = macierz_sasiedztwa(l_nastepnikow, l_poprzednikow, opcja)
                 petla = False
             else:
                 print("Wybrano nieprawidlowa opcje")
@@ -272,11 +291,21 @@ def menu():
             print("Sortowanie:")
             if wybor_sort == '1':
                 if wybor_macierz == '2':
-                    print(DFS_msasiedztwa(macierz))
+                    start = time.time()
+                    macierz = DFS_msasiedztwa(macierz)
+                    end = time.time()
+                    if opcja != '1':
+                        print(macierz)
+                    print("Czas operacji: ", start - end)
                 petla = False
             elif wybor_sort == '2':
                 if wybor_macierz == '2':
-                    print(DEL_msasiedztwa(macierz))
+                    start = time.time()
+                    macierz = DEL_msasiedztwa(macierz)
+                    end = time.time()
+                    if opcja != '1':
+                        print(macierz)
+                    print("Czas operacji: ", start - end)
                 petla = False
             else:
                 print("Wybrano nieprawidlowa opcje")
