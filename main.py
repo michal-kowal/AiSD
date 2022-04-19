@@ -65,6 +65,7 @@ def macierz_grafu(następniki, poprzedniki, bezincydejki, n, opcja):
     if opcja != '1':
         for i in range(len(matrix)):
             print(*matrix[i])
+    return matrix
 
 
 def macierz_sasiedztwa(n, p, opcja):
@@ -83,7 +84,17 @@ def macierz_sasiedztwa(n, p, opcja):
         [print(*matrix[i]) for i in range(len(matrix))]
     return matrix
 
+###############################
+#sortowanie macierzy grafu
 
+def DEL_mgrafu(matrix):
+    lista = []
+    print(lista)
+
+    
+    
+#############################
+#sortowanie macierzy sąsiedztwa
 def szukaj_wierzcholka(macierz):
     n = len(macierz)
     for i in range(n):
@@ -275,7 +286,7 @@ def menu():
             print("[1] Wygeneruj macierz grafu\n[2] Wygeneruj macierz sasiedztwa")
             wybor_macierz = input()
             if wybor_macierz == '1':
-                macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, len(l_nastepnikow), opcja)
+                macierz = macierz_grafu(l_nastepnikow, l_poprzednikow, l_b_incydencji, len(l_nastepnikow), opcja)
                 petla = False
             elif wybor_macierz == '2':
                 macierz = macierz_sasiedztwa(l_nastepnikow, l_poprzednikow, opcja)
@@ -292,20 +303,34 @@ def menu():
             if wybor_sort == '1':
                 if wybor_macierz == '2':
                     start = time.time()
-                    macierz = DFS_msasiedztwa(macierz)
+                    sort_list = DFS_msasiedztwa(macierz)
                     end = time.time()
                     if opcja != '1':
-                        print(macierz)
-                    print("Czas operacji: ", start - end)
+                        print(sort_list)
+                    print("Czas operacji: ", end - start)
+                if wybor_macierz == '1':
+                    start = time.time()
+                    #sort_list = DFS_mgrafu(macierz)
+                    end = time.time()
+                    if opcja != '1':
+                        print(sort_list)
+                    print("Czas operacji: ", end - start)
                 petla = False
             elif wybor_sort == '2':
                 if wybor_macierz == '2':
                     start = time.time()
-                    macierz = DEL_msasiedztwa(macierz)
+                    sort_list = DEL_msasiedztwa(macierz)
                     end = time.time()
                     if opcja != '1':
-                        print(macierz)
-                    print("Czas operacji: ", start - end)
+                        print(sort_list)
+                    print("Czas operacji: ", end - start)
+                if wybor_macierz == '1':
+                    start = time.time()
+                    sort_list = DEL_mgrafu(macierz)
+                    end = time.time()
+                    if opcja != '1':
+                        print(sort_list)
+                    print("Czas operacji: ", end - start)
                 petla = False
             else:
                 print("Wybrano nieprawidlowa opcje")
