@@ -1,4 +1,5 @@
 # Program dziala na zasadzie listy nastepnikow, poprzednikow, listy braku incydencji. Uzyto do tego slownikow
+from os import remove
 import random
 import math
 import time
@@ -89,8 +90,33 @@ def macierz_sasiedztwa(n, p, opcja):
 
 def DEL_mgrafu(matrix):
     lista = []
-    print(lista)
-
+    n = len(matrix)
+    for j in range(0, n):
+        #detektor cyklu#
+        w_niezalezne = []
+        for i in range(0, n):
+            w_niezalezne.append(matrix[i][-2])
+        if 0 not in w_niezalezne:
+            return "Graf zawiera cykl. Sortowanie niemozliwe"
+        ###############
+        for i in range(0, n):
+            if matrix[i][-2] == 0:
+                index = i + 1
+                lista.append(index)
+                matrix[i][-2] = -1
+                break
+        for i in range(0, n):
+            matrix[i][index - 1] = -1
+            if max(matrix[i][0:n]) > n:
+                matrix[i][-2] = matrix[i].index(max(matrix[i][0:n])) + 1
+            elif matrix[i][-2] == -1:
+                continue
+            else:
+                matrix[i][-2] = 0
+        #for i in range(0, n):
+        #    print(*matrix[i])
+        #print()
+    return lista
     
     
 #############################
