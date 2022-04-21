@@ -74,10 +74,10 @@ def macierz_sasiedztwa(n, p, opcja):
     for i in range(len(n)):
         matrix.append([])
         for j in range(len(n)):
-            if j + 1 in p[i + 1]:
-                matrix[i].append(-1)
-            elif j + 1 in n[i + 1]:
+            if j + 1 in n[i + 1]:
                 matrix[i].append(1)
+            elif j + 1 in p[i + 1]:
+                matrix[i].append(-1)
             else:
                 matrix[i].append(0)
     if opcja != '1':
@@ -117,7 +117,8 @@ def DEL_mgrafu(matrix):
         #    print(*matrix[i])
         #print()
     return lista
-    
+
+
 def DFS_mgrafu(matrix):
     s = []
     l = []
@@ -126,7 +127,7 @@ def DFS_mgrafu(matrix):
     szary = -1
     czarny = -2
     while len(s) < n:
-    #wybierz wierzchołek o jak najmniejszym stopniu wejściowym
+        # wybierz wierzchołek o jak najmniejszym stopniu wejściowym
         in_deg = []
         for i in range(0, n):
             stopien = 0
@@ -170,15 +171,23 @@ def DFS_mgrafu(matrix):
     return s
 
 #############################
-#sortowanie macierzy sąsiedztwa
+# sortowanie macierzy sąsiedztwa
 def szukaj_wierzcholka(macierz):
     n = len(macierz)
+    res = -1
     for i in range(n):
-        if -1 in macierz[i]:
-            continue
-        else:
-            return i
-    return -1
+        if macierz[i] != []:
+            niezalezny = True
+            for j in range(n):
+                if macierz[i][j] == -1:
+                    niezalezny = False
+                    break
+                if macierz[i][j] == 1 and macierz[j][i] == 1:
+                    return -1
+            if niezalezny:
+                res = i
+                break
+    return res
 
 
 def DEL_msasiedztwa(macierz):
@@ -213,7 +222,7 @@ def koloruj(n, kolory, macierz, lista):
     for i, nastepnik in enumerate(macierz[n]):
         if nastepnik == 1 and kolory[i] == 0:
             cykl = koloruj(i, kolory, macierz, lista)
-            if not cykl:
+            if cykl is False:
                 return False
         elif nastepnik == 1 and kolory[i] == 1:
             return False
