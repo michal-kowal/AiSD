@@ -107,10 +107,10 @@ def DEL_mgrafu(matrix):
                 break
         for i in range(0, n):
             matrix[i][index - 1] = -1
-            if max(matrix[i][0:n]) > n:
-                matrix[i][-2] = matrix[i].index(max(matrix[i][0:n])) + 1
-            elif matrix[i][-2] == -1:
+            if matrix[i][-2] == -1:
                 continue
+            elif max(matrix[i][0:n]) > n:
+                matrix[i][-2] = matrix[i].index(max(matrix[i][0:n])) + 1
             else:
                 matrix[i][-2] = 0
         #for i in range(0, n):
@@ -118,7 +118,57 @@ def DEL_mgrafu(matrix):
         #print()
     return lista
     
-    
+def DFS_mgrafu(matrix):
+    s = []
+    l = []
+    wierzcholki = []
+    n = len(matrix)
+    szary = -1
+    czarny = -2
+    while len(s) < n:
+    #wybierz wierzchołek o jak najmniejszym stopniu wejściowym
+        in_deg = []
+        for i in range(0, n):
+            stopien = 0
+            for j in range(0, n):
+                if matrix[i][j] > n:
+                    stopien += 1
+            in_deg.append(stopien)
+        w = in_deg.index(min(in_deg))
+        while w in wierzcholki:
+            in_deg[w] = n
+            w = in_deg.index(min(in_deg))
+        wierzcholki.append(w)
+        if len(l) == 0:
+            l.insert(0, w+1)
+    #kolorowanie
+        while any(x > 0 and x <= n for x in matrix[w]) and len(l) > 0:
+            #na szaro
+            for i in range(0, n):
+                matrix[i][w] = szary
+            for i in range(0, n):
+                if matrix[w][i] > 0 and matrix[w][i] <= n:
+                    w = i
+                    wierzcholki.append(w)
+                    l.insert(0, i+1)
+                    for j in range(0, n):
+                        matrix[j][w] = szary
+            #na czarno
+            for i in range(0, len(l)):
+                if all(x <= 0 or x > n for x in matrix[l[i]-1][0:n]):
+                    s.insert(0, l[i])
+                    for j in range(0, n):
+                        matrix[j][l[i]-1] = czarny
+                    l[i] = 0
+            l = list(filter((0).__ne__, l))
+            if len(l) > 0:
+                w = l[-1] - 1
+                wierzcholki.append(w)
+    #for i in range(0, n):
+    #    print(*matrix[i])
+    #print(s)
+    return s
+
 #############################
 #sortowanie macierzy sąsiedztwa
 def szukaj_wierzcholka(macierz):
@@ -336,7 +386,7 @@ def menu():
                     print("Czas operacji: ", end - start)
                 if wybor_macierz == '1':
                     start = time.time()
-                    #sort_list = DFS_mgrafu(macierz)
+                    sort_list = DFS_mgrafu(macierz)
                     end = time.time()
                     if opcja != '1':
                         print(sort_list)
