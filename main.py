@@ -4,6 +4,7 @@ import random
 import math
 import time
 
+
 def generuj_listy(n, p, b):
     for i in n.keys():
         n[i].sort()
@@ -18,12 +19,13 @@ def generuj_listy(n, p, b):
             if k not in n[i] and k not in p[i]:
                 b[i].append(k)
 
+
 def macierz_grafu(następniki, poprzedniki, bezincydejki, n, opcja):
     # generuj macierz pustą
     matrix = []
     for i in range(0, n):
         wiersz = []
-        for j in range(0, n+3):
+        for j in range(0, n + 3):
             wiersz.append(0)
         matrix.append(wiersz)
     # mordowanie z listą następników
@@ -37,31 +39,31 @@ def macierz_grafu(następniki, poprzedniki, bezincydejki, n, opcja):
             if len(list(następniki.values())[i]) == 0:
                 continue
             else:
-                matrix[i][j-1] = list(następniki.values())[i][-1]
+                matrix[i][j - 1] = list(następniki.values())[i][-1]
     # mordowanie z listą poprzedników
     for i in range(0, n):
         if len(list(poprzedniki.values())[i]) == 0:
             continue
         else:
-            matrix[i][n+1] = list(poprzedniki.values())[i][0]
+            matrix[i][n + 1] = list(poprzedniki.values())[i][0]
     for i in range(0, n):
         for j in list(poprzedniki.values())[i]:
             if len(list(poprzedniki.values())[i]) == 0:
                 continue
             else:
-                matrix[i][j-1] = (list(poprzedniki.values())[i][-1] + n)
-    #mordowanie z listą bla bla bla
+                matrix[i][j - 1] = (list(poprzedniki.values())[i][-1] + n)
+    # mordowanie z listą bla bla bla
     for i in range(0, n):
         if len(list(bezincydejki.values())[i]) == 0:
             continue
         else:
-            matrix[i][n+2] = list(bezincydejki.values())[i][0]
+            matrix[i][n + 2] = list(bezincydejki.values())[i][0]
     for i in range(0, n):
         for j in list(bezincydejki.values())[i]:
             if len(list(bezincydejki.values())[i]) == 0:
                 continue
             else:
-                matrix[i][j-1] = -(list(bezincydejki.values())[i][-1])
+                matrix[i][j - 1] = -(list(bezincydejki.values())[i][-1])
     # PRRYNT
     if opcja != '1':
         for i in range(len(matrix)):
@@ -74,10 +76,10 @@ def macierz_sasiedztwa(n, p, opcja):
     for i in range(len(n)):
         matrix.append([])
         for j in range(len(n)):
-            if j + 1 in n[i + 1]:
-                matrix[i].append(1)
-            elif j + 1 in p[i + 1]:
+            if j + 1 in p[i + 1]:
                 matrix[i].append(-1)
+            elif j + 1 in n[i + 1]:
+                matrix[i].append(1)
             else:
                 matrix[i].append(0)
     if opcja != '1':
@@ -85,14 +87,15 @@ def macierz_sasiedztwa(n, p, opcja):
         [print(*matrix[i]) for i in range(len(matrix))]
     return matrix
 
+
 ###############################
-#sortowanie macierzy grafu
+# sortowanie macierzy grafu
 
 def DEL_mgrafu(matrix):
     lista = []
     n = len(matrix)
     for j in range(0, n):
-        #detektor cyklu#
+        # detektor cyklu#
         w_niezalezne = []
         for i in range(0, n):
             w_niezalezne.append(matrix[i][-2])
@@ -113,9 +116,9 @@ def DEL_mgrafu(matrix):
                 matrix[i][-2] = matrix[i].index(max(matrix[i][0:n])) + 1
             else:
                 matrix[i][-2] = 0
-        #for i in range(0, n):
+        # for i in range(0, n):
         #    print(*matrix[i])
-        #print()
+        # print()
     return lista
 
 
@@ -141,53 +144,46 @@ def DFS_mgrafu(matrix):
             w = in_deg.index(min(in_deg))
         wierzcholki.append(w)
         if len(l) == 0:
-            l.insert(0, w+1)
-    #kolorowanie
+            l.insert(0, w + 1)
+        # kolorowanie
         while any(x > 0 and x <= n for x in matrix[w]) and len(l) > 0:
-            #na szaro
+            # na szaro
             for i in range(0, n):
                 matrix[i][w] = szary
             for i in range(0, n):
                 if matrix[w][i] > 0 and matrix[w][i] <= n:
                     w = i
                     wierzcholki.append(w)
-                    l.insert(0, i+1)
+                    l.insert(0, i + 1)
                     for j in range(0, n):
                         matrix[j][w] = szary
-            #na czarno
+            # na czarno
             for i in range(0, len(l)):
-                if all(x <= 0 or x > n for x in matrix[l[i]-1][0:n]):
+                if all(x <= 0 or x > n for x in matrix[l[i] - 1][0:n]):
                     s.insert(0, l[i])
                     for j in range(0, n):
-                        matrix[j][l[i]-1] = czarny
+                        matrix[j][l[i] - 1] = czarny
                     l[i] = 0
             l = list(filter((0).__ne__, l))
             if len(l) > 0:
                 w = l[-1] - 1
                 wierzcholki.append(w)
-    #for i in range(0, n):
+    # for i in range(0, n):
     #    print(*matrix[i])
-    #print(s)
+    # print(s)
     return s
+
 
 #############################
 # sortowanie macierzy sąsiedztwa
 def szukaj_wierzcholka(macierz):
     n = len(macierz)
-    res = -1
     for i in range(n):
-        if macierz[i] != []:
-            niezalezny = True
-            for j in range(n):
-                if macierz[i][j] == -1:
-                    niezalezny = False
-                    break
-                if macierz[i][j] == 1 and macierz[j][i] == 1:
-                    return -1
-            if niezalezny:
-                res = i
-                break
-    return res
+        if -1 in macierz[i]:
+            continue
+        else:
+            return i
+    return -1
 
 
 def DEL_msasiedztwa(macierz):
@@ -208,21 +204,28 @@ def DEL_msasiedztwa(macierz):
 
 def szukaj_bialego_niezaleznego(macierz, kolorowanie):
     n = len(macierz)
+    res = -1
     for i in range(n):
-        if -1 in macierz[i]:
-            continue
-        else:
-            if kolorowanie[i] == 0:
-                return i
-    return -1
+        niezalezny = True
+        for j in range(n):
+            if macierz[i][j] == -1:
+                niezalezny = False
+                break
+
+        if niezalezny and kolorowanie[i] == 0:
+            res = i
+            break
+    return res
 
 
 def koloruj(n, kolory, macierz, lista):
     kolory[n] = 1
     for i, nastepnik in enumerate(macierz[n]):
+        if macierz[n][i] == -1 and macierz[i][n] == -1:
+            return False
         if nastepnik == 1 and kolory[i] == 0:
             cykl = koloruj(i, kolory, macierz, lista)
-            if cykl is False:
+            if not cykl:
                 return False
         elif nastepnik == 1 and kolory[i] == 1:
             return False
@@ -253,34 +256,36 @@ def DFS_msasiedztwa(macierz):
     lista.reverse()
     return lista
 
+
 def generator_grafu(n, m):
-    #generuj pustą macierz sąsziedztwa
+    # generuj pustą macierz sąsziedztwa
     matrix = []
     for i in range(0, n):
         wiersz = []
         for j in range(0, n):
             wiersz.append(0)
         matrix.append(wiersz)
-    #wstaw w losowe miejsca jedynki
+    # wstaw w losowe miejsca jedynki
     for i in range(0, m):
-        j = random.randint(1, n-1)
-        k = random.randint(0, j-1)
+        j = random.randint(1, n - 1)
+        k = random.randint(0, j - 1)
         while matrix[j][k] == 1:
-            j = random.randint(1, n-1)
-            k = random.randint(0, j-1)
+            j = random.randint(1, n - 1)
+            k = random.randint(0, j - 1)
         matrix[j][k] = 1
-    #na podstawie macierzy sąsiedztwa odtwórz listę następników
+    # na podstawie macierzy sąsiedztwa odtwórz listę następników
     l_nastepnikow = {}
-    for i in range(1, n+1):
+    for i in range(1, n + 1):
         nastepniki = []
         for j in range(0, n):
-            if matrix[i-1][j] == 1:
-                nastepniki.append(j+1)
+            if matrix[i - 1][j] == 1:
+                nastepniki.append(j + 1)
         l_nastepnikow[i] = nastepniki
-    #for i in range(0, n):
+    # for i in range(0, n):
     #    print(*matrix[i])
-    #print(l_nastepnikow)
+    # print(l_nastepnikow)
     return l_nastepnikow
+
 
 def menu():
     petla = True
@@ -291,7 +296,7 @@ def menu():
     while petla:
         print('[1] Wygeneruj graf\n[2] Wprowadz dane wejsciowe\n[3] Wczytaj z pliku')
         opcja = input()
-        if opcja == '1':    # Generuj graf
+        if opcja == '1':  # Generuj graf
             petla = False
             try:
                 l_wierzcholkow = int(input('Podaj liczbe wierzcholkow: '))
@@ -299,7 +304,7 @@ def menu():
                 print("Podano niepoprawne dane")
                 err = True
                 break
-            l_krawedzi = math.floor(((l_wierzcholkow*(l_wierzcholkow-1))/2)*0.5)
+            l_krawedzi = math.floor(((l_wierzcholkow * (l_wierzcholkow - 1)) / 2) * 0.5)
             l_nastepnikow = generator_grafu(l_wierzcholkow, l_krawedzi)
             generuj_listy(l_nastepnikow, l_poprzednikow, l_b_incydencji)
         elif opcja == '2':
@@ -335,7 +340,7 @@ def menu():
         elif opcja == '3':  # Wczytaj graf
             plik = open('graf.txt')
             try:
-                w, k = [int(x) for x in plik.readline().split()]    # wierzcholki, krawedzie
+                w, k = [int(x) for x in plik.readline().split()]  # wierzcholki, krawedzie
             except ValueError:
                 print("Wprowadzono zle dane")
                 err = True
@@ -362,9 +367,9 @@ def menu():
             petla = False
         else:
             print('Nieprawidlowy wybor!')
-    #print(l_nastepnikow)
-    #print(l_poprzednikow)
-    #print(l_b_incydencji)
+    # print(l_nastepnikow)
+    # print(l_poprzednikow)
+    # print(l_b_incydencji)
     if not err:
         petla = True
         while petla:
