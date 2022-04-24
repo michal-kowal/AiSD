@@ -128,6 +128,8 @@ def DFS_mgrafu(matrix):
     szary = -1
     czarny = -2
     while len(s) < n:
+        if all(x[-2] != 0 for x in matrix):
+            return "Graf zawiera cykl. Sortowanie niemozliwe"
     #wybierz wierzchołek o jak najmniejszym stopniu wejściowym
         for i in range(0, n):
             if matrix[i][-2] == 0:
@@ -159,10 +161,10 @@ def DFS_mgrafu(matrix):
             if len(l) > 0:
                 w = l[-1] - 1
         # zwracaj
-        if all(x[-2] != 0 for x in matrix):
-            return "Graf zawiera cykl. Sortowanie niemozliwe"
-        else:
-            return s
+        # if all(x[-2] != 0 for x in matrix):
+        #     print("XD")
+        #     return "Graf zawiera cykl. Sortowanie niemozliwe"
+    return s
 
 #############################
 # sortowanie macierzy sąsiedztwa
