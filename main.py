@@ -96,10 +96,7 @@ def DEL_mgrafu(matrix):
     n = len(matrix)
     for j in range(0, n):
         # detektor cyklu#
-        w_niezalezne = []
-        for i in range(0, n):
-            w_niezalezne.append(matrix[i][-2])
-        if 0 not in w_niezalezne:
+        if all(x[-2] != 0 for x in matrix):
             return "Graf zawiera cykl. Sortowanie niemozliwe"
         ###############
         for i in range(0, n):
@@ -113,7 +110,7 @@ def DEL_mgrafu(matrix):
             if matrix[i][-2] == -1:
                 continue
             elif max(matrix[i][0:n]) > n:
-                matrix[i][-2] = matrix[i].index(max(matrix[i][0:n])) + 1
+                matrix[i][-2] = 1 #+ matrix[i].index(max(matrix[i][0:n]))
             else:
                 matrix[i][-2] = 0
         # for i in range(0, n):
