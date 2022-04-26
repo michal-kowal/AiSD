@@ -96,7 +96,10 @@ def DEL_mgrafu(matrix):
     n = len(matrix)
     for j in range(0, n):
         # detektor cyklu#
-        if all(x[-2] != 0 for x in matrix):
+        w_niezalezne = []
+        for i in range(0, n):
+            w_niezalezne.append(matrix[i][-2])
+        if 0 not in w_niezalezne:
             return "Graf zawiera cykl. Sortowanie niemozliwe"
         ###############
         for i in range(0, n):
@@ -110,7 +113,7 @@ def DEL_mgrafu(matrix):
             if matrix[i][-2] == -1:
                 continue
             elif max(matrix[i][0:n]) > n:
-                matrix[i][-2] = 1 #+ matrix[i].index(max(matrix[i][0:n]))
+                matrix[i][-2] = matrix[i].index(max(matrix[i][0:n])) + 1
             else:
                 matrix[i][-2] = 0
         # for i in range(0, n):
@@ -118,50 +121,68 @@ def DEL_mgrafu(matrix):
         # print()
     return lista
 
+
+def szukanie_wierzcholka_poczatkowego(macierz):
+    il_wierz = len(macierz)
+    kolejnosc = []
+    for i in range(il_wierz):
+        if macierz[i][il_wierz + 1] == 0:
+            kolejnosc.append(i)
+    if len(kolejnosc) > 0:
+        return kolejnosc
+    else:
+        return -1
+
+
+def szukanie_nastepnika(macierz, kolor, il_wierzcholkow, w):
+    if macierz[w][il_wierzcholkow] > 0:
+        print(macierz[w][il_wierzcholkow], macierz[w][macierz[w][il_wierzcholkow] - 1] + 1)
+        for i in range(macierz[w][il_wierzcholkow], macierz[w][macierz[w][il_wierzcholkow] - 1] + 1):   # pierwsy nastepnik, ostatni nastepnik
+            print(w, i-1)
+            if i - 1 >= il_wierzcholkow:
+                return -1
+            if il_wierzcholkow >= macierz[w][i - 1] >= 0:
+                if kolor[i - 1] == 0:
+                    return i - 1
+                elif kolor[i - 1] == 1:
+                    return -1
+
+    return None
+
+
 def DFS_mgrafu(matrix):
-    s = []
-    l = []
-    n = len(matrix)
-    szary = -1
-    czarny = -2
-    while len(s) < n:
-        if all(x[-2] != 0 for x in matrix):
-            return "Graf zawiera cykl. Sortowanie niemozliwe"
-    #wybierz wierzchołek o jak najmniejszym stopniu wejściowym
-        for i in range(0, n):
-            if matrix[i][-2] == 0:
-                w = i
-                l.insert(0, i+1)
-                matrix[i][-2] = szary
-                break
-        if len(l) == 0:
-            l.insert(0, w+1)
-    #kolorowanie
-        while any(x > 0 and x <= n for x in matrix[w]) and len(l) > 0:
-            #na szaro
-            for i in range(0, n):
-                matrix[i][w] = szary
-            for i in range(0, n):
-                if matrix[w][i] > 0 and matrix[w][i] <= n:
-                    w = i
-                    l.insert(0, i+1)
-                    for j in range(0, n):
-                        matrix[j][w] = szary
-            #na czarno
-            for i in range(0, len(l)):
-                if all(x <= 0 or x > n for x in matrix[l[i]-1][0:n]):
-                    s.insert(0, l[i])
-                    for j in range(0, n):
-                        matrix[j][l[i]-1] = czarny
-                    l[i] = 0
-            l = list(filter((0).__ne__, l))
-            if len(l) > 0:
-                w = l[-1] - 1
-        # zwracaj
-        # if all(x[-2] != 0 for x in matrix):
-        #     print("XD")
-        #     return "Graf zawiera cykl. Sortowanie niemozliwe"
-    return s
+    il_wierz = len(matrix)
+    kolorowanie = [0 for j in range(il_wierz)]
+    stos = []
+    pamiec = []
+    kolejnosc = szukanie_wierzcholka_poczatkowego(matrix)
+    if kolejnosc == -1:
+        return "Graf zawiera cykl. Sortowanie niemożliwe."
+    for i in kolejnosc:
+        if kolorowanie[i] == 0:
+            pamiec.append(i)
+            kolorowanie[i] = 1
+            kolejny = szukanie_nastepnika(matrix, kolorowanie, il_wierz, i)
+            if kolejny == -1:
+                return "Graf zawiera cykl. Sortowanie niemożliwe."
+            while len(pamiec) > 0:
+                while kolejny is not None:
+                    kolorowanie[kolejny] = 1
+                    pamiec.append(kolejny)
+                    kolejny = szukanie_nastepnika(matrix, kolorowanie, il_wierz, kolejny)
+                    if kolejny == -1:
+                        return "Graf zawiera cykl. Sortowanie niemożliwe."
+                kolorowanie[pamiec[-1]] = 2
+                stos.insert(0, pamiec[-1] + 1)
+                pamiec.pop()
+                if len(pamiec) > 0:
+                    kolejny = szukanie_nastepnika(matrix, kolorowanie, il_wierz, pamiec[-1])
+                    if kolejny == -1:
+                        return "Graf zawiera cykl. Sortowanie niemożliwe."
+    if len(stos) < il_wierz:
+        return "Graf zawiera cykl. Sortowanie niemożliwe."
+    return stos
+
 
 #############################
 # sortowanie macierzy sąsiedztwa
