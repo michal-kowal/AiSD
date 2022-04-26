@@ -146,7 +146,6 @@ def szukanie_nastepnika(macierz, kolor, il_wierzcholkow, w):
                     return i - 1
                 elif kolor[i - 1] == 1:
                     return -1
-
     return None
 
 
@@ -182,7 +181,6 @@ def DFS_mgrafu(matrix):
     if len(stos) < il_wierz:
         return "Graf zawiera cykl. Sortowanie niemożliwe."
     return stos
-
 
 #############################
 # sortowanie macierzy sąsiedztwa
