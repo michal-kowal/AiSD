@@ -182,7 +182,7 @@ def DFS_mgrafu(matrix):
         return "Graf zawiera cykl. Sortowanie niemożliwe."
     return stos
 
-#############################
+############################
 # sortowanie macierzy sąsiedztwa
 def szukaj_wierzcholka(macierz):
     n = len(macierz)
