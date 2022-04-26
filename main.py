@@ -96,10 +96,7 @@ def DEL_mgrafu(matrix):
     n = len(matrix)
     for j in range(0, n):
         # detektor cyklu#
-        w_niezalezne = []
-        for i in range(0, n):
-            w_niezalezne.append(matrix[i][-2])
-        if 0 not in w_niezalezne:
+        if all(x[-2] != 0 for x in matrix):
             return "Graf zawiera cykl. Sortowanie niemozliwe"
         ###############
         for i in range(0, n):
@@ -113,7 +110,7 @@ def DEL_mgrafu(matrix):
             if matrix[i][-2] == -1:
                 continue
             elif max(matrix[i][0:n]) > n:
-                matrix[i][-2] = matrix[i].index(max(matrix[i][0:n])) + 1
+                matrix[i][-2] = 1
             else:
                 matrix[i][-2] = 0
         # for i in range(0, n):
@@ -136,9 +133,9 @@ def szukanie_wierzcholka_poczatkowego(macierz):
 
 def szukanie_nastepnika(macierz, kolor, il_wierzcholkow, w):
     if macierz[w][il_wierzcholkow] > 0:
-        print(macierz[w][il_wierzcholkow], macierz[w][macierz[w][il_wierzcholkow] - 1] + 1)
+        #print(macierz[w][il_wierzcholkow], macierz[w][macierz[w][il_wierzcholkow] - 1] + 1)
         for i in range(macierz[w][il_wierzcholkow], macierz[w][macierz[w][il_wierzcholkow] - 1] + 1):   # pierwsy nastepnik, ostatni nastepnik
-            print(w, i-1)
+            #print(w, i-1)
             if i - 1 >= il_wierzcholkow:
                 return -1
             if il_wierzcholkow >= macierz[w][i - 1] >= 0:
