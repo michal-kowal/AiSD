@@ -1,4 +1,3 @@
-# Program dziala na zasadzie listy nastepnikow, poprzednikow, listy braku incydencji. Uzyto do tego slownikow
 import random
 import math
 import time
