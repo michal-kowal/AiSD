@@ -67,28 +67,29 @@ def euler_nieskierowany(matrix, v, stos):
 
 
 def hamilton_nieskierowany(matrix):
-    odwiedzone = [False for i in range(len(matrix))]
-    stos = []
-    stos.append(1)
     n = len(matrix)
+    odwiedzone = [False for i in range(n)]
     odwiedzone[0] = True
-    visited = -1
+    stos = []
+    stos.append(0)
+    powrot_z = -1
     while True:
         nastepnik = False
-        for i in range(visited + 1, n):
-            if matrix[stos[-1]][i] == 1 and (not odwiedzone[i] or (stos[0] == i and len(matrix) == len(stos))):
+        for i in range(powrot_z + 1, n):
+            if (not odwiedzone[i] or (len(stos) == len(matrix) and stos[0] == i)) and matrix[stos[-1]][i] == 1:
                 stos.append(i)
                 odwiedzone[i] = True
                 nastepnik = True
-                visited = -1
+                powrot_z = -1
+                break
         if not nastepnik and len(stos) == 1:
             break
         if not nastepnik:
+            powrot_z = stos[-1]
             odwiedzone[stos[-1]] = False
-            visited = stos[-1]
             stos.pop()
-        if stos[0] == stos[-1] and len(stos) == n + 1:
-            for i in range(len(stos)):
+        if len(stos) == n + 1 and stos[0] == stos[-1]:
+            for i in range(n + 1):
                 stos[i] += 1
             return stos
     return False
@@ -225,7 +226,6 @@ def menu():
             petla = False
         else:
             print('Nieprawidlowy wybor!')
-        [print(dane[i]) for i in range(len(dane))]
     if not err:
         petla = True
         while petla:
