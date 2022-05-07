@@ -1,7 +1,8 @@
+# Program dziala na zasadzie listy nastepnikow, poprzednikow, listy braku incydencji. Uzyto do tego slownikow
+import copy
 import random
 import math
 import time
-
 
 def macierz_sasiedztwa(n):
     matrix = []
@@ -45,11 +46,57 @@ def generator_grafu(n, m):
     return l_nastepnikow
 
 
+def czy_ma_nieskierowany_euler(matrix):
+    for i in range(len(matrix)):
+        stopien = 0
+        for j in range(len(matrix)):
+            if matrix[i][j] == 1:
+                stopien += 1
+        if stopien % 2 != 0:
+            return False
+    return True
+
+
+def euler_nieskierowany(matrix, v, stos):
+    for j in range(len(matrix)):
+        if matrix[v][j] == 1:
+            matrix[v][j] = 0
+            matrix[j][v] = 0
+            euler_nieskierowany(matrix, j, stos)
+    stos.append(v + 1)
+
+
+def hamilton_nieskierowany(matrix):
+    odwiedzone = [False for i in range(len(matrix))]
+    stos = []
+    stos.append(1)
+    n = len(matrix)
+    odwiedzone[0] = True
+    visited = -1
+    while True:
+        nastepnik = False
+        for i in range(visited + 1, n):
+            if matrix[stos[-1]][i] == 1 and (not odwiedzone[i] or (stos[0] == i and len(matrix) == len(stos))):
+                stos.append(i)
+                odwiedzone[i] = True
+                nastepnik = True
+                visited = -1
+        if not nastepnik and len(stos) == 1:
+            break
+        if not nastepnik:
+            odwiedzone[stos[-1]] = False
+            visited = stos[-1]
+            stos.pop()
+        if stos[0] == stos[-1] and len(stos) == n + 1:
+            for i in range(len(stos)):
+                stos[i] += 1
+            return stos
+    return False
+
+
 def menu():
     petla = True
     l_nastepnikow = {}
-    l_poprzednikow = {}
-    l_b_incydencji = {}
     err = False
     skierowany = True
     while petla:
@@ -178,22 +225,36 @@ def menu():
             petla = False
         else:
             print('Nieprawidlowy wybor!')
-        print(dane)
+        [print(dane[i]) for i in range(len(dane))]
     if not err:
         petla = True
         while petla:
-            print("Cykl:\n[1] Cykl Eulera\n[2] Cykl Hamiltona\n[3] Wyjscie")
+            print("\n[1] Cykl Eulera\n[2] Cykl Hamiltona\n[3] Wyjscie")
             wybor_cyklu = input()
             if wybor_cyklu == '1':
                 if skierowany:
                     print("tu bedzie euler dla skierowanego")
                 else:
-                    print("tu bedzie euler dla nieskierowanego")
+                    dane_k = copy.deepcopy(dane)
+                    czy_ma = czy_ma_nieskierowany_euler(dane_k)
+                    stos = []
+                    if czy_ma:
+                        euler_nieskierowany(dane_k, 0, stos)
+                        print("Cykl:", end=" ")
+                        print(*stos)
+                    else:
+                        print("Graf wejsciowy nie zawiera cyklu.")
             elif wybor_cyklu == '2':
                 if skierowany:
                     print("tu bedzie hamilton dla skierowanego")
                 else:
-                    print("tu bedzie hamilton dla nieskierowanego")
+                    dane_k = copy.deepcopy(dane)
+                    res = hamilton_nieskierowany(dane_k)
+                    if res == False:
+                        print("Graf wejsciowy nie zawiera cyklu.")
+                    else:
+                        print("Cykl:", end=" ")
+                        print(res)
             elif wybor_cyklu == '3':
                 return 0
             else:
