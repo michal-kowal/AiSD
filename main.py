@@ -240,8 +240,11 @@ def menu():
                     stos = []
                     if czy_ma:
                         euler_nieskierowany(dane_k, 0, stos)
-                        print("Cykl:", end=" ")
-                        print(*stos)
+                        if len(dane_k) + 1 == len(stos):
+                            print("Cykl:", end=" ")
+                            print(*stos)
+                        else:
+                            print("Graf wejsciowy nie zawiera cyklu.")
                     else:
                         print("Graf wejsciowy nie zawiera cyklu.")
             elif wybor_cyklu == '2':
