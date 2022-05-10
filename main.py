@@ -24,26 +24,28 @@ def generator_grafu(n, m):
         for j in range(0, n):
             wiersz.append(0)
         matrix.append(wiersz)
-    # wstaw w losowe miejsca jedynki
-    for i in range(0, m):
-        j = random.randint(1, n - 1)
-        k = random.randint(0, j - 1)
-        while matrix[j][k] == 1:
-            j = random.randint(1, n - 1)
-            k = random.randint(0, j - 1)
-        matrix[j][k] = 1
+        # wstaw w losowe miejsca jedynki
+    while m > 0:
+        for j in range(n):
+            for k in range(2):
+                k = random.randint(0, n-1)
+                while k == j or matrix[j][k] == 1:
+                    k = random.randint(0, n-1)
+                matrix[j][k] = 1
+                matrix[k][j] = 1
+        m -= n
+    for i in range(0, n):
+       print(*matrix[i])
+    print()
     # na podstawie macierzy sąsiedztwa odtwórz listę następników
-    l_nastepnikow = {}
-    for i in range(1, n + 1):
-        nastepniki = []
-        for j in range(0, n):
-            if matrix[i - 1][j] == 1:
-                nastepniki.append(j + 1)
-        l_nastepnikow[i] = nastepniki
-    # for i in range(0, n):
-    #    print(*matrix[i])
-    # print(l_nastepnikow)
-    return l_nastepnikow
+    # l_nastepnikow = {}
+    # for i in range(1, n + 1):
+    #     nastepniki = []
+    #     for j in range(0, n):
+    #         if matrix[i - 1][j] == 1:
+    #             nastepniki.append(j + 1)
+    #     l_nastepnikow[i] = nastepniki
+    return matrix
 
 
 def czy_ma_nieskierowany_euler(matrix):
@@ -94,6 +96,22 @@ def hamilton_nieskierowany(matrix):
             return stos
     return False
 
+def euler_skierowany(dict, v, stos):
+    if len(dict[v]) > 0:
+        j = dict[v][0]
+        dict[v].remove(j)
+        euler_skierowany(dict, j, stos)
+    stos.append(v)
+
+def czy_ma_skierowany_euler(dict):
+    for i in range(1, len(dict) + 1):
+        count = 0
+        for j in range(1, len(dict) + 1):
+            if i in dict[j]:
+                count += 1
+        if len(dict[i])%2 != count:
+            return False
+    return True
 
 def menu():
     petla = True
@@ -116,15 +134,24 @@ def menu():
         print('Dane:\n[1] Wygeneruj graf\n[2] Wprowadz dane wejsciowe\n[3] Wczytaj z pliku')
         opcja = input()
         if opcja == '1':  # Generuj graf
-            # Trzeba zmodyfikowac generator grafu aby mogl byc skierowany lub nie
-            petla = False
             try:
-                l_wierzcholkow = int(input('Podaj liczbe wierzcholkow: '))
+                n = int(input("Podaj liczbę wierzchołków: "))
+                s = [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90]
+                i = int(input("Wybierz poziom nasycenia:\n1) 10%\n2) 20%\n3) 30%\n4) 40%\n5) 50%\n6) 60%\n7) 70%\n8) 80%\n9) 90%\n")) - 1
             except ValueError:
-                print("Podano niepoprawne dane")
+                print("nieprawidłowe dane")
                 err = True
                 break
-
+            if skierowany:
+                nasycenie =  (n*(n-1))
+                m = math.floor(nasycenie * s[i])
+                #l_nastepnikow = generator_grafu(n, m)
+                #dane = macierz_sasiedztwa(l_nastepnikow)
+            else:
+                nasycenie = (n*(n-1))/2
+                m = math.floor(nasycenie * s[i])
+                dane = generator_grafu(n, m)
+            petla = False
         elif opcja == '2':
             try:
                 l_wierzcholkow = int(input('Podaj liczbe wierzcholkow: '))
@@ -233,7 +260,17 @@ def menu():
             wybor_cyklu = input()
             if wybor_cyklu == '1':
                 if skierowany:
-                    print("tu bedzie euler dla skierowanego")
+                    stos = []
+                    czy_ma = czy_ma_skierowany_euler(dane)
+                    euler_skierowany(dane, 1, stos)
+                    if czy_ma:
+                        if len(dane) + 1 == len(stos):
+                            print("Cykl:", end = " ")
+                            print(*stos)
+                        else:
+                            print("Graf wejsciowy nie zawiera cyklu.")
+                    else:
+                        print("Graf wejsciowy nie zawiera cyklu.")
                 else:
                     dane_k = copy.deepcopy(dane)
                     czy_ma = czy_ma_nieskierowany_euler(dane_k)
