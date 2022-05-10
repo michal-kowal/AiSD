@@ -261,8 +261,9 @@ def menu():
             if wybor_cyklu == '1':
                 if skierowany:
                     stos = []
-                    czy_ma = czy_ma_skierowany_euler(dane)
-                    euler_skierowany(dane, 1, stos)
+                    dane_k = copy.deepcopy(dane)
+                    czy_ma = czy_ma_skierowany_euler(dane_k)
+                    euler_skierowany(dane_k, 1, stos)
                     if czy_ma:
                         if len(dane) + 1 == len(stos):
                             print("Cykl:", end = " ")
