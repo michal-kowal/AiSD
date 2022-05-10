@@ -98,10 +98,10 @@ def hamilton_nieskierowany(matrix):
 
 def euler_skierowany(dict, v, stos):
     if len(dict[v]) > 0:
-        j = dict[v][0]
-        dict[v].remove(j)
-        euler_skierowany(dict, j, stos)
-    stos.append(v)
+        for i in dict[v]:
+            dict[v].remove(i)
+            stos.append(v)
+            euler_skierowany(dict, i, stos)
 
 def czy_ma_skierowany_euler(dict):
     for i in range(1, len(dict) + 1):
@@ -109,7 +109,7 @@ def czy_ma_skierowany_euler(dict):
         for j in range(1, len(dict) + 1):
             if i in dict[j]:
                 count += 1
-        if len(dict[i])%2 != count:
+        if len(dict[i]) != count:
             return False
     return True
 
@@ -260,12 +260,14 @@ def menu():
             wybor_cyklu = input()
             if wybor_cyklu == '1':
                 if skierowany:
-                    stos = []
                     dane_k = copy.deepcopy(dane)
+                    stos = []
                     czy_ma = czy_ma_skierowany_euler(dane_k)
-                    euler_skierowany(dane_k, 1, stos)
+                    stos.append(1)
+                    #euler_skierowany(dane_k, dane[1][0], stos)
                     if czy_ma:
-                        if len(dane) + 1 == len(stos):
+                        euler_skierowany(dane_k, dane[1][0], stos)
+                        if stos[0] == stos[-1]:
                             print("Cykl:", end = " ")
                             print(*stos)
                         else:
