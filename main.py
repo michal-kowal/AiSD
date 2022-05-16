@@ -113,6 +113,38 @@ def czy_ma_skierowany_euler(dict):
             return False
     return True
 
+def hamilton_skierowany(dict, l_elem):
+    odwiedzone = [False for i in range(len(dict))]
+    odwiedzone[0] = True
+    stos = [1]
+    v = 1
+    n = len(dict)
+    count = 0
+    while odwiedzone[v-1]:
+        nastepnik = False
+        for i in dict[v]:
+            if not odwiedzone[i-1] or (len(stos) == n and stos[0] == i):
+                stos.append(i)
+                odwiedzone[i-1] = True
+                nastepnik = True
+                v = i
+                if all(odwiedzone[x] == True for x in range(n)):
+                    for i in range(1, n+1):
+                        if i not in stos:
+                            odwiedzone[i-1] = False
+                    count += 1
+                break
+        if l_elem < count:
+             break
+        if not nastepnik and len(stos) == 1:
+            break
+        if not nastepnik:
+            stos.pop()
+            v = stos[-1]
+        if len(stos) == n + 1 and stos[0] == stos[-1]:
+            return stos
+    return False
+
 def menu():
     petla = True
     l_nastepnikow = {}
@@ -289,7 +321,16 @@ def menu():
                         print("Graf wejsciowy nie zawiera cyklu.")
             elif wybor_cyklu == '2':
                 if skierowany:
-                    print("tu bedzie hamilton dla skierowanego")
+                    l_elem = 0
+                    for i in range(1, len(dane)+1):
+                        l_elem += len(dane[i])
+                    dane_k = copy.deepcopy(dane)
+                    res = hamilton_skierowany(dane_k, l_elem)
+                    if res == False:
+                        print("Graf wejsciowy nie zawiera cyklu.")
+                    else:
+                        print("Cykl:", end=" ")
+                        print(*res)
                 else:
                     dane_k = copy.deepcopy(dane)
                     res = hamilton_nieskierowany(dane_k)
@@ -297,7 +338,7 @@ def menu():
                         print("Graf wejsciowy nie zawiera cyklu.")
                     else:
                         print("Cykl:", end=" ")
-                        print(res)
+                        print(*res)
             elif wybor_cyklu == '3':
                 return 0
             else:
