@@ -16,7 +16,7 @@ def macierz_sasiedztwa(n):
     return matrix
 
 
-def generator_grafu(n, m):
+def generator_grafu_nieskierowanego(n, m):
     # generuj pustą macierz sąsziedztwa
     matrix = []
     for i in range(0, n):
@@ -25,28 +25,32 @@ def generator_grafu(n, m):
             wiersz.append(0)
         matrix.append(wiersz)
         # wstaw w losowe miejsca jedynki
-    while m > 0:
-        for j in range(n):
-            for k in range(2):
-                k = random.randint(0, n-1)
-                while k == j or matrix[j][k] == 1:
-                    k = random.randint(0, n-1)
-                matrix[j][k] = 1
-                matrix[k][j] = 1
-        m -= n
-    for i in range(0, n):
-       print(*matrix[i])
-    print()
-    # na podstawie macierzy sąsiedztwa odtwórz listę następników
-    # l_nastepnikow = {}
-    # for i in range(1, n + 1):
-    #     nastepniki = []
-    #     for j in range(0, n):
-    #         if matrix[i - 1][j] == 1:
-    #             nastepniki.append(j + 1)
-    #     l_nastepnikow[i] = nastepniki
+    for i in range(0, m):
+        j = random.randint(1, n - 1)
+        k = random.randint(0, j - 1)
+        while matrix[j][k] == 1:
+            j = random.randint(1, n - 1)
+            k = random.randint(0, j - 1)
+        matrix[j][k] = 1
+        matrix[k][j] = 1
     return matrix
 
+def generator_grafu_skierowanego(n, m):
+    # pusta lista nastepników
+    l_nastepnikow = {}
+    for i in range(1, n+1):
+        l_nastepnikow[i] = []
+    # wstaw w losowe miejsca krawedzie
+    for k in range(0, m):
+        i = random.randint(1, n)
+        j = random.randint(1, n)
+        while i == j or j in l_nastepnikow[i]:
+            i = random.randint(1, n)
+            j = random.randint(1, n)
+        l_nastepnikow[i].append(j)
+    for i in range(1, n+1):
+        l_nastepnikow[i].sort()
+    return l_nastepnikow
 
 def czy_ma_nieskierowany_euler(matrix):
     for i in range(len(matrix)):
@@ -100,8 +104,8 @@ def euler_skierowany(dict, v, stos):
     if len(dict[v]) > 0:
         for i in dict[v]:
             dict[v].remove(i)
-            stos.append(v)
             euler_skierowany(dict, i, stos)
+    stos.insert(0, v)
 
 def czy_ma_skierowany_euler(dict):
     for i in range(1, len(dict) + 1):
@@ -113,37 +117,36 @@ def czy_ma_skierowany_euler(dict):
             return False
     return True
 
-def hamilton_skierowany(dict, l_elem):
-    odwiedzone = [False for i in range(len(dict))]
-    odwiedzone[0] = True
-    stos = [1]
-    v = 1
-    n = len(dict)
-    count = 0
-    while odwiedzone[v-1]:
-        nastepnik = False
-        for i in dict[v]:
-            if not odwiedzone[i-1] or (len(stos) == n and stos[0] == i):
-                stos.append(i)
-                odwiedzone[i-1] = True
-                nastepnik = True
-                v = i
-                if all(odwiedzone[x] == True for x in range(n)):
-                    for i in range(1, n+1):
-                        if i not in stos:
-                            odwiedzone[i-1] = False
-                    count += 1
-                break
-        if l_elem < count:
-             break
-        if not nastepnik and len(stos) == 1:
-            break
-        if not nastepnik:
-            stos.pop()
-            v = stos[-1]
-        if len(stos) == n + 1 and stos[0] == stos[-1]:
-            return stos
+def Hamiltionian(dict, n, v, VISITED, k, sol, vis, xd):
+    vis[v-1] = 1
+    VISITED += 1
+    for i in dict[v]:
+        if i == xd and VISITED == n:
+            sol.append(v)
+            return True
+        if not vis[i-1]:
+            if Hamiltionian(dict, n, i, VISITED, k, sol, vis, xd):
+                sol.append(v)
+                return True
+    vis[v-1] = 0
+    VISITED -= 1
     return False
+
+def hamilton_skierowany(dane_k):
+    n = len(dane_k)
+    vis = [0 for _ in range(n)]
+    #sol = [None for _ in range(n)]
+    sol = []
+    VISITED = 0
+    start = None
+    k = 2
+    start = 1
+    sol.append(start)
+    res = Hamiltionian(dane_k, n, start, VISITED, k, sol, vis, start)
+    if res == True:
+        return sol
+    else:
+        return False
 
 def menu():
     petla = True
@@ -174,15 +177,22 @@ def menu():
                 print("nieprawidłowe dane")
                 err = True
                 break
+            # nasycenie =  (n*(n-1))
+            # m = math.floor(nasycenie * s[i])
+            # dane = generator_grafu(n, m, skierowany)
+            # print(dane)
             if skierowany:
                 nasycenie =  (n*(n-1))
                 m = math.floor(nasycenie * s[i])
                 #l_nastepnikow = generator_grafu(n, m)
                 #dane = macierz_sasiedztwa(l_nastepnikow)
+                dane = generator_grafu_skierowanego(n, m)
+                #print(dane)
             else:
                 nasycenie = (n*(n-1))/2
                 m = math.floor(nasycenie * s[i])
-                dane = generator_grafu(n, m)
+                dane = generator_grafu_nieskierowanego(n, m)
+                #print(dane)
             petla = False
         elif opcja == '2':
             try:
@@ -248,7 +258,7 @@ def menu():
                             break
                     petla = False
         elif opcja == '3':  # Wczytaj graf
-            plik = open('graf.txt')
+            plik = open('2graf.txt')
             try:
                 w, k = [int(x) for x in plik.readline().split()]  # wierzcholki, krawedzie
             except ValueError:
@@ -294,51 +304,66 @@ def menu():
                 if skierowany:
                     dane_k = copy.deepcopy(dane)
                     stos = []
+                    start = time.time()
                     czy_ma = czy_ma_skierowany_euler(dane_k)
-                    stos.append(1)
+                    #stos.append(1)
                     #euler_skierowany(dane_k, dane[1][0], stos)
                     if czy_ma:
-                        euler_skierowany(dane_k, dane[1][0], stos)
-                        if stos[0] == stos[-1]:
-                            print("Cykl:", end = " ")
-                            print(*stos)
-                        else:
-                            print("Graf wejsciowy nie zawiera cyklu.")
+                        euler_skierowany(dane_k, 1, stos)
+                        if opcja != '1':
+                            if stos[0] == stos[-1]:
+                                print("Cykl:", end = " ")
+                                print(*stos)
+                            else:
+                                print("Graf wejsciowy nie zawiera cyklu.")
                     else:
-                        print("Graf wejsciowy nie zawiera cyklu.")
+                        if opcja != '1':
+                            print("Graf wejsciowy nie zawiera cyklu.")
+                    end = time.time()
+                    print('Czas operacji: ', end - start)
                 else:
                     dane_k = copy.deepcopy(dane)
+                    start = time.time()
                     czy_ma = czy_ma_nieskierowany_euler(dane_k)
                     stos = []
                     if czy_ma:
                         euler_nieskierowany(dane_k, 0, stos)
-                        if len(dane_k) + 1 == len(stos):
-                            print("Cykl:", end=" ")
-                            print(*stos)
-                        else:
-                            print("Graf wejsciowy nie zawiera cyklu.")
+                        if opcja != '1':
+                            if len(dane_k) + 1 == len(stos):
+                                print("Cykl:", end=" ")
+                                print(*stos)
+                            else:
+                                print("Graf wejsciowy nie zawiera cyklu.")
                     else:
-                        print("Graf wejsciowy nie zawiera cyklu.")
+                        if opcja != '1':
+                            print("Graf wejsciowy nie zawiera cyklu.")
+                    end = time.time()
+                    print('Czas operacji: ', end - start)
             elif wybor_cyklu == '2':
                 if skierowany:
-                    l_elem = 0
-                    for i in range(1, len(dane)+1):
-                        l_elem += len(dane[i])
                     dane_k = copy.deepcopy(dane)
-                    res = hamilton_skierowany(dane_k, l_elem)
-                    if res == False:
-                        print("Graf wejsciowy nie zawiera cyklu.")
-                    else:
-                        print("Cykl:", end=" ")
-                        print(*res)
+                    start = time.time()
+                    res = hamilton_skierowany(dane_k)
+                    if opcja != '1':
+                        if res == False:
+                            print("Graf wejsciowy nie zawiera cyklu.")
+                        else:
+                            print("Cykl:", end=" ")
+                            print(*res)
+                    end = time.time()
+                    print('Czas operacji: ', end - start)
                 else:
                     dane_k = copy.deepcopy(dane)
+                    start = time.time()
                     res = hamilton_nieskierowany(dane_k)
-                    if res == False:
-                        print("Graf wejsciowy nie zawiera cyklu.")
-                    else:
-                        print("Cykl:", end=" ")
-                        print(*res)
+                    if opcja != '1':
+                        if res == False:
+                            print("Graf wejsciowy nie zawiera cyklu.")
+                        else:
+                            print("Cykl:", end=" ")
+                            print(*res)
+                    end = time.time()
+                    print('Czas operacji: ', end - start)
             elif wybor_cyklu == '3':
                 return 0
             else:
