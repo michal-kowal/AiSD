@@ -258,7 +258,11 @@ def menu():
                             break
                     petla = False
         elif opcja == '3':  # Wczytaj graf
-            plik = open('2graf.txt')
+            try:
+                plik = open('graf.txt')
+            except FileNotFoundError:
+                print("Zla nazwa pliku. Plik musi sie nazywac graf.txt")
+                return 0
             try:
                 w, k = [int(x) for x in plik.readline().split()]  # wierzcholki, krawedzie
             except ValueError:
@@ -269,10 +273,16 @@ def menu():
                 l_nastepnikow[i] = []
             if skierowany:
                 for i in range(k):
-                    w_poczatkowy, w_koncowy = plik.readline().split()
+                    try:
+                        w_poczatkowy, w_koncowy = plik.readline().split()
+                    except ValueError:
+                        print("Nie podano odpowiedniej ilosci krawedzi")
+                        return 0
                     err = False
                     if not w_poczatkowy.isnumeric() or not w_koncowy.isnumeric():
                         err = True
+                        print("To musza byc wartosci liczbowe")
+                        return 0
                     else:
                         w_poczatkowy = int(w_poczatkowy)
                         w_koncowy = int(w_koncowy)
@@ -284,7 +294,11 @@ def menu():
                 dane = l_nastepnikow
             else:
                 for i in range(k):
-                    w1, w2 = [int(x) for x in plik.readline().split()]
+                    try:
+                        w1, w2 = [int(x) for x in plik.readline().split()]
+                    except ValueError:
+                        print("Nie podano odpowiedniej ilosci krawedzi")
+                        return 0
                     l_nastepnikow[w1].append(w2)
                     l_nastepnikow[w2].append(w1)
                     dane = macierz_sasiedztwa(l_nastepnikow)
