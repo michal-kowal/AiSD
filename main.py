@@ -4,6 +4,7 @@ import random
 import math
 import time
 
+
 def macierz_sasiedztwa(n):
     matrix = []
     for i in range(len(n)):
@@ -35,6 +36,7 @@ def generator_grafu_nieskierowanego(n, m):
         matrix[k][j] = 1
     return matrix
 
+
 def generator_grafu_skierowanego(n, m):
     # pusta lista nastepników
     l_nastepnikow = {}
@@ -52,9 +54,12 @@ def generator_grafu_skierowanego(n, m):
         l_nastepnikow[i].sort()
     return l_nastepnikow
 
+
 def czy_ma_nieskierowany_euler(matrix):
     for i in range(len(matrix)):
         stopien = 0
+        if matrix[i][i] == 1:
+            stopien += 1
         for j in range(len(matrix)):
             if matrix[i][j] == 1:
                 stopien += 1
@@ -286,7 +291,7 @@ def menu():
                     else:
                         w_poczatkowy = int(w_poczatkowy)
                         w_koncowy = int(w_koncowy)
-                        if w_poczatkowy < 1 or w_poczatkowy > w or w_koncowy < 1 or w_koncowy > w or w_koncowy == w_poczatkowy:
+                        if w_poczatkowy < 1 or w_poczatkowy > w or w_koncowy < 1 or w_koncowy > w or w_koncowy == w_poczatkowy:     # usunac ostatni warunek do obslugi multigrafu
                             err = True
                         elif w_koncowy in l_nastepnikow[w_poczatkowy]:
                             err = True
@@ -343,7 +348,7 @@ def menu():
                     if czy_ma:
                         euler_nieskierowany(dane_k, 0, stos)
                         if opcja != '1':
-                            if len(dane_k) + 1 == len(stos):
+                            if stos[0] == stos[-1]:
                                 print("Cykl:", end=" ")
                                 print(*stos)
                             else:
