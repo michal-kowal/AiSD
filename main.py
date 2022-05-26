@@ -1,4 +1,27 @@
+import random
+
 # n-ilosc przedmiotow; r-rozmiar przedmiotu; w-waga przedmiotu; b-rozmiar plecaka
+def dynamiczne(elementy, plecak):
+    matrix = [[0 for i in range(plecak + 1)] for j in range(len(elementy) + 1)]
+    for i in range(1, len(elementy) + 1):
+        for j in range(1, plecak + 1):
+            if elementy[i - 1][1] > j:
+                matrix[i][j] = matrix[i - 1][j]
+            else:
+                matrix[i][j] = max(matrix[i - 1][j], matrix[i - 1][j - elementy[i - 1][1]] + elementy[i - 1][2])
+    # [print(*matrix[i]) for i in range(len(matrix))]
+    wybrane = []
+    rozmiar = 0
+    f_celu = 0
+    for i in range(len(elementy), 0, -1):
+        if matrix[i][plecak] > matrix[i -1][plecak]:
+            wybrane.append(i)
+            f_celu += elementy[i - 1][2]
+            rozmiar += elementy[i - 1][1]
+            plecak -= elementy[i - 1][1]
+    return wybrane, rozmiar, f_celu
+
+
 def main():
     print("[1] Wprowadz dane\n[2] Wczytaj z pliku\n[3] Generuj dane")
     dane = input()
@@ -38,16 +61,22 @@ def main():
                 else:
                     elementy.append([i + 1, r, w])
     elif dane == '3':
-        print("dane sie generujo")
+        b = int(input("Podaj rozmiar plecaka: "))
+        n = int(input("Podaj ilosc elementow: "))
+        for i in range(n):
+            rozmiar = random.randint(1, b + 1)
+            wartosc = random.randint(1, 100)
+            elementy.append([i + 1, rozmiar, wartosc])
     else:
         print("Zla opcja")
     if not error:
         dalej = True
         while dalej:
             print("\n[1] AD - algorytm programowania dynamicznego\n[2] AZ - algorytm zachlanny\n[3] AB - algorytm silowy\n[4] Wyjscie")
-            algorytm = int(input("Wybierz opcje: "))
+            algorytm = input("Wybierz opcje: ")
+            wynik = ''
             if algorytm == '1':
-                wynik = "Tu bedzie AD"
+                wynik = dynamiczne(elementy, b)
             elif algorytm == '2':
                 wynik = "Tu bedzie AZ"
             elif algorytm == '3':
@@ -56,6 +85,8 @@ def main():
                 dalej = False
             else:
                 print("Podano zle dane")
+            if wynik != '':
+                print('Elementy w plecaku: ', *wynik[0], '\nWartosc funkcji celu: ', wynik[2], '\nRozmiar przedmiotow: ', wynik[1])
 
 
 try:
