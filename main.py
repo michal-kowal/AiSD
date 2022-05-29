@@ -1,4 +1,6 @@
 import random
+import time
+from numpy import maximum
 
 # n-ilosc przedmiotow; r-rozmiar przedmiotu; w-waga przedmiotu; b-rozmiar plecaka
 def dynamiczne(elementy, plecak):
@@ -20,6 +22,83 @@ def dynamiczne(elementy, plecak):
             rozmiar += elementy[i - 1][1]
             plecak -= elementy[i - 1][1]
     return wybrane, rozmiar, f_celu
+
+def merge_sort(array):
+    if len(array) > 1:
+        srodek = len(array) // 2
+        lewa = array[:srodek]
+        prawa = array[srodek:]
+        merge_sort(lewa)
+        merge_sort(prawa)
+        i = 0
+        j = 0
+        k = 0
+        while i < len(lewa) and j < len(prawa):
+            if lewa[i][-1] >= prawa[j][-1]:
+                array[k] = lewa[i]
+                i += 1
+            else:
+                array[k] = prawa[j]
+                j += 1
+            k += 1
+        while i < len(lewa):
+            array[k] = lewa[i]
+            i += 1
+            k += 1
+        while j < len(prawa):
+            array[k] = prawa[j]
+            j += 1
+            k += 1
+    return array
+
+def zachlany(elementy, plecok):
+    # indeks, waga, wartość, wartość przez wagę
+    wartosc_przez_wage = [[x[0], x[1], x[2], x[2]/x[1]] for x in elementy]
+    wartosc_przez_wage = merge_sort(wartosc_przez_wage)
+    #print(wartosc_przez_wage)
+    n = len(elementy)
+    b = 0
+    wartosc = 0
+    w_plecaku = []
+    for i in range(0, n):
+        if b + wartosc_przez_wage[i][1] <= plecok:
+            wartosc += wartosc_przez_wage[i][2]
+            b += wartosc_przez_wage[i][1]
+            w_plecaku.append(wartosc_przez_wage[i][0])
+    return [w_plecaku, b, wartosc]
+
+def brutal(elementy, plecok):
+    wartosci = []
+    binarne = []
+    wagi = []
+    n = len(elementy)
+    form = '0' + str(n) + 'b'
+    for i in range(1, (2**n)):
+        binary = format(i, form)
+        suma_wag = 0
+        binarne.append(binary)
+        for j in range(n):
+            if binary[j] == '1':
+                suma_wag += elementy[j][1]
+        wagi.append(suma_wag)
+        suma_wartosci = 0
+        if suma_wag <= plecok:
+            for j in range(n):
+                if binary[j] == '1':
+                    suma_wartosci += elementy[j][2]
+            wartosci.append(suma_wartosci)
+        else:
+            wartosci.append(0)
+    maximum = max(wartosci)
+    id = wartosci.index(maximum)
+    b = wagi[id]
+    binary = binarne[id]
+    w_plecaku = []
+    for j in range(n):
+        if binary[j] == '1':
+            w_plecaku.append(elementy[j][0])
+    return [w_plecaku, b, maximum]
+
 
 
 def main():
@@ -76,17 +155,24 @@ def main():
             algorytm = input("Wybierz opcje: ")
             wynik = ''
             if algorytm == '1':
+                start = time.time()
                 wynik = dynamiczne(elementy, b)
+                end = time.time()
             elif algorytm == '2':
-                wynik = "Tu bedzie AZ"
+                start = time.time()
+                wynik = zachlany(elementy, b)
+                end = time.time()
             elif algorytm == '3':
-                wynik = "Tu bedzie AB"
+                start = time.time()
+                wynik = brutal(elementy, b)
+                end = time.time()
             elif algorytm == '4':
                 dalej = False
             else:
                 print("Podano zle dane")
             if wynik != '':
                 print('Elementy w plecaku: ', *wynik[0], '\nWartosc funkcji celu: ', wynik[2], '\nRozmiar przedmiotow: ', wynik[1])
+                print('Czas operacji: ', end - start)
 
 
 try:
