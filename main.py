@@ -90,13 +90,17 @@ def brutal(elementy, plecok):
         else:
             wartosci.append(0)
     maximum = max(wartosci)
-    id = wartosci.index(maximum)
-    b = wagi[id]
-    binary = binarne[id]
-    w_plecaku = []
-    for j in range(n):
-        if binary[j] == '1':
-            w_plecaku.append(elementy[j][0])
+    if maximum > 0:
+        id = wartosci.index(maximum)
+        b = wagi[id]
+        binary = binarne[id]
+        w_plecaku = []
+        for j in range(n):
+            if binary[j] == '1':
+                w_plecaku.append(elementy[j][0])
+    else:
+        w_plecaku = ['brak']
+        b = 0
     return [w_plecaku, b, maximum]
 
 
